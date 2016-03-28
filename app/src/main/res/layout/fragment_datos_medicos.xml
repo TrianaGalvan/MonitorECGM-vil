@@ -1,0 +1,75 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/iconsText"
+    tools:context="com.example.trianaandaluciaprietogalvan.helloworldsupport.DatosMedicos">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="16dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Frecuencia respiratoria: "
+                    android:textSize="17dp"
+                    android:textColor="@color/primary_text"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No registrado"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Presión arterial: "
+                    android:textSize="17dp"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/primary_text"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No registrado"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Peso: "
+                    android:textSize="17dp"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/primary_text"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="60 Kg"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Altura: "
+                    android:textSize="17dp"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/primary_text"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="1.60 m"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16dp" />
+            </LinearLayout>
+        </ScrollView>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_editar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_action_editar" />
+</FrameLayout>

@@ -1,0 +1,50 @@
+<resources>
+    <!-- login -->
+    <string name="app_name">Monitor ECG</string>
+    <string name="action_settings">Ajustes</string>
+    <string-array name="historial_array">
+        <item>Dr.  Manuel Lopez Leiba</item>
+        <item>Dra. Renta Luna Martínez</item>
+        <item>Dr.  Luis Gónzales Vaca</item>
+        <item>Dra. Elenena Mejía Ruíz</item>
+    </string-array>
+
+    <string-array name="electrocardiogramas">
+        <item>HC06</item>
+        <item>HC06-1</item>
+        <item>HC06-2</item>
+        <item>HC06-3</item>
+    </string-array>
+    <string name="correo">Correo electrónico</string>
+    <string name="contrasena">Contraseña</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="recuperar_contrasena">¿Olvidaste tu contraseña?</string>
+    <string name="datos_clinicos_texto">Si no se cuentan con todos los datos, oprima el botón registrar</string>
+    <string name="ver_electrocardiograma">Ver electrocardiograma</string>
+
+    <!-- botones -->
+    <string name="btn_entrar">Entrar</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="empezar_ecg">Empezar</string>
+    <string name="detener_ecg">Detener</string>
+    <string name="guardar">Guardar</string>
+
+    <string name="recuperar_contrasena_texto">Se enviará un correo a tu correo electrónico registrado para recuperar tu contraseña</string>
+
+    <string name="title_activity_registrarse">Datos personales</string>
+    <string name="title_activity_login_final">login</string>
+    <string name="title_activity_recuperar_contrasena">Recuperar contraseña</string>
+    <string name="navigation_drawer_open">Entrar</string>
+    <string name="navigation_drawer_close">Salir</string>
+    <string name="title_activity_registrar_datos_medicos">Datos Médicos</string>
+    <string name="title_activity_floatin_button">FloatinButton</string>
+    <string name="title_activity_electrocardiograma_datos">ElectrocardiogramaDatos</string>
+    <string name="title_activity_grafica">Grafica</string>
+    <string name="title_activity_perfil">Perfil</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>

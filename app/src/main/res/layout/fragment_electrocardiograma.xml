@@ -1,0 +1,95 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/iconsText"
+    tools:context="com.example.trianaandaluciaprietogalvan.helloworldsupport.Electrocardiograma">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipo de electrocardiograma:"
+                android:textSize="16dp"
+                android:textColor="@color/primary_text"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:textSize="16dp"
+                    android:text="Completo"
+                    android:backgroundTint="@color/primary_text"/>
+
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="36dp"
+                    android:layout_marginTop="5dp"
+                    android:textSize="16dp"
+                    android:text="Complejo QRS" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Médico:"
+                android:id="@+id/textView4"
+                android:textSize="16dp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="15dp" />
+            <Spinner
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="10dp"
+                android:entries="@array/historial_array"
+                android:spinnerMode="dropdown"
+                android:dropDownSelector="@color/colorAccent"
+                android:textSize="16dp">
+            </Spinner>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Electrocardiografo:"
+                android:textSize="16dp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="10dp"
+                />
+
+            <Spinner
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="15dp"
+                android:entries="@array/electrocardiogramas"
+                android:spinnerMode="dropdown"
+                android:textSize="16dp"></Spinner>
+
+            <Button
+                android:layout_width="114dp"
+                android:layout_height="35dp"
+                android:text="@string/empezar_ecg"
+                android:background="@color/colorAccent"
+                android:layout_marginBottom="28dp"
+                android:layout_marginTop="18dp"
+                android:layout_gravity="center"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:textColor="@color/iconsText"
+                android:onClick="onClickEmpezarGrafica" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

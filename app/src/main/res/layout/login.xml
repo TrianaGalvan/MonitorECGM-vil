@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/logo180"
+            android:minWidth="180dp"
+            android:minHeight="180dp"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp" />
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtCorreo"
+            android:hint="@string/correo"
+            android:textColor="@color/iconsText"
+            android:textColorHint="@color/iconsText"
+            android:textSize="21dp"
+            android:layout_below="@+id/imageView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_entrar"
+            android:id="@+id/button"
+            android:background="@color/colorAccent"
+            android:layout_marginTop="19dp"
+            android:textColor="@color/iconsText"
+            android:onClick="onClickEntrar"
+            android:layout_below="@+id/txtCorreo"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textStyle="bold"
+            android:textSize="18dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:id="@+id/textView"
+            android:autoText="true"
+            android:textSize="40dp"
+            android:fontFamily="sans-serif-black"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:textColor="#FFF"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registrarse"
+            android:textColor="@color/iconsText"
+            android:id="@+id/txtRegistrarse"
+            android:textSize="18dp"
+            android:clickable="true"
+            android:onClick="onClickRegistrarse"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="24dp"
+            android:paddingTop="10dp"
+            android:textStyle="italic"
+            android:shadowRadius="20"/>
+
+    </RelativeLayout>
+</LinearLayout>

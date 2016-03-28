@@ -1,0 +1,29 @@
+ <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     android:background="@color/iconsText"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.example.trianaandaluciaprietogalvan.helloworldsupport.Perfil">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_perfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"/>
+
+            <!-- The main content view -->
+            <FrameLayout
+                android:id="@+id/content_frame_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tab_perfil"/>
+        </RelativeLayout>
+</FrameLayout>
+
+
+
+

@@ -1,0 +1,127 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.trianaandaluciaprietogalvan.helloworldsupport.VerElectrocardiograma">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:layout_margin="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Médico:"
+                android:textSize="17dp"
+                android:textColor="@color/primary_text"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rodrigo López López"
+                android:id="@+id/textView4"
+                android:textSize="16dp"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Frecuencia cardíaca:"
+                android:textSize="17dp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="60 Ipm"
+                android:textSize="16dp"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha del electrocardiograma:"
+                android:textSize="17dp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="01/10/2015"
+                android:textSize="16dp"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha de revisión:"
+                android:textSize="17dp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="05/10/2015"
+                android:textSize="16dp"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ver_electrocardiograma"
+                android:id="@+id/button"
+                android:background="@color/colorAccent"
+                android:layout_marginTop="19dp"
+                android:textColor="@color/iconsText"
+                android:onClick="onClickVerElectrocardiograma"
+                android:paddingRight="15dp"
+                android:paddingLeft="15dp"
+                android:layout_below="@+id/txtCorreo"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:textStyle="bold"
+                android:textSize="17dp"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diagnóstico:"
+                android:textSize="17dp"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="10dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="El electrocardiograma presenta..."
+                android:textSize="16dp"
+                android:textColor="@color/secondary_text"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                />
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>
