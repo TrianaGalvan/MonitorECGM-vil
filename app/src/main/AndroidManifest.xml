@@ -44,7 +44,13 @@
             android:name=".Grafica"
             android:label="@string/title_activity_grafica"
             android:screenOrientation="landscape"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+
+        <provider
+            android:name=".data.MonitorECGContentProvider"
+            android:authorities="com.example.trianaandaluciaprietogalvan.helloworldsupport"
+            android:enabled="true"
+            android:exported="false"></provider>
     </application>
 
 </manifest>
