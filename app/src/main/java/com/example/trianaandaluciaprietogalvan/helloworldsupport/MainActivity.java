@@ -1,5 +1,6 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorECGUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -139,8 +142,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 /* Salir */
                 case 4:
-                    Intent intentLogin = new Intent();
-                    intentLogin.setClass(getApplicationContext(), LoginActivity.class);
+                    MonitorECGUtils.limpiarUltimoUsuarioEnSesion(getBaseContext());
+                    AccountManager am = AccountManager.get(getBaseContext());
+                    am.addAccount(getString(R.string.account_type), null, null, null,MainActivity.this, null, null);
+                    finish();
                     break;
                 default:
                     break;

@@ -1,19 +1,38 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
-public class loginFinal extends AppCompatActivity {
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorECGUtils;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class LoginFinal extends AppCompatActivity{
+
+    private static final String LOG_TAG = LoginFinal.class.getSimpleName();
+    private AccountAuthenticatorResponse accountAuthenticatorResponse;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_final);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Intent intent = getIntent();
+        accountAuthenticatorResponse = intent.getParcelableExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        if (accountAuthenticatorResponse != null) {
+            accountAuthenticatorResponse.onRequestContinued();
+        }
+
     }
 
     public void onClickRecuperarcontrasena(View view) {
@@ -23,8 +42,94 @@ public class loginFinal extends AppCompatActivity {
     }
 
     public void onClickEntrarAplicacion(View view) {
-        Intent intentAplicacion = new Intent();
-        intentAplicacion.setClass(this,MainActivity.class);
-        startActivity(intentAplicacion);
+        //obtener los datos del form
+        TextView correoTxt= (TextView) findViewById(R.id.txtCorreo);
+        TextView contrasenaTxt = (TextView) findViewById(R.id.txtContraseña);
+        final String correo = correoTxt.getText().toString();
+        final String pass = contrasenaTxt.getText().toString();
+
+        ServicioWeb.loginPaciente(correo, pass, new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                Boolean resp = response.body();
+                //si existe el paciente
+                if(resp){
+                    MonitorECGUtils.guardarUltimoUsuarioEnSesion(LoginFinal.this, correo);
+                    finishLogin(correo, pass);
+                    Intent intentHistorial = new Intent(LoginFinal.this,MainActivity.class);
+                    startActivity(intentHistorial);
+                    finish();
+                }else{
+                    authenticatorFinish(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                authenticatorFinish(null);
+            }
+        });
+
+    }
+
+    private void authenticatorFinish(Bundle bundle){
+        if(accountAuthenticatorResponse != null){
+            if (bundle != null) {
+                accountAuthenticatorResponse.onResult(bundle);
+            } else {
+                accountAuthenticatorResponse.onError(AccountManager.ERROR_CODE_CANCELED,
+                        "canceled");
+            }
+            accountAuthenticatorResponse = null;
+        }
+
+    }
+
+    private void finishLogin(String correo, String pass){
+        Bundle data = new Bundle();
+        String accountType = getString(R.string.account_type);
+
+        data.putString(AccountManager.KEY_ACCOUNT_NAME, correo);
+        data.putString(AccountManager.KEY_ACCOUNT_TYPE, accountType);
+        Intent intent = new Intent();
+        intent.putExtras(data);
+
+        final Account account = new Account(correo,accountType);
+
+        AccountManager am = AccountManager.get(this);
+        Account[] accounts = am.getAccountsByType(accountType);
+
+        Account cuentaMatch = null;
+
+        for (Account cuenta: accounts){
+            if(cuenta.name.equals(correo)){
+                cuentaMatch = cuenta;
+                break;
+            }
+        }
+
+        if(cuentaMatch != null){
+            //solo se coloca la contraseña
+            am.setPassword(cuentaMatch, pass);
+        }else{
+            //no existe la cuenta hay que crearla
+            if(am.addAccountExplicitly(account, pass, null)){
+                authenticatorFinish(data);
+                setResult(RESULT_OK, intent);
+            }
+            //no se creo correctamente 
+            else{
+                authenticatorFinish(null);
+                Log.e(LOG_TAG,"No se creo correctamente la cuenta");
+            }
+
+        }
+
+
+    }
+
+    public void onClickRegistrarse(View view) {
+        Intent intentRegistrarse = new Intent(this,Registrarse.class);
+        startActivity(intentRegistrarse);
     }
 }
