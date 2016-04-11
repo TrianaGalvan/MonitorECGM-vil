@@ -6,6 +6,13 @@ package com.example.trianaandaluciaprietogalvan.helloworldsupport.entities;
 public class Cardiologo {
 
     public Integer idCardiologo;
+    public String nombre;
+    public String apellidoPaterno;
+    public String apellidoMaterno;
+
+    public String obtenerNombreCompleto(){
+        return nombre+" "+apellidoPaterno+" "+apellidoMaterno;
+    }
 
     @Override
     public String toString() {

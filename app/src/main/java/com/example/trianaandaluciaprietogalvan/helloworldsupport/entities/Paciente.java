@@ -6,7 +6,7 @@ public class Paciente {
     public String nombre;
     public String apellidoPaterno;
     public String apellidoMaterno;
-    public String sexo;
+    public Character sexo;
     public Integer edad;
     public String curp;
     public String correo;

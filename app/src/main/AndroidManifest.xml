@@ -6,6 +6,13 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- Permissions required by the sync adapter -->
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS"/>
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <application
         android:allowBackup="true"
@@ -46,7 +53,8 @@
             android:name=".data.MonitorECGContentProvider"
             android:authorities="com.example.trianaandaluciaprietogalvan.helloworldsupport"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:syncable="true"/>
 
         <activity
             android:name=".Monitor"
@@ -59,14 +67,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!-- The ContentProvider service -->
         <service
-            android:name=".MonitorECGAuthenticatorService">
+            android:name=".sync.MonitorECGAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
             <meta-data android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator"/>
+        </service>
+        <!-- The SyncAdapter service -->
+        <service
+            android:name=".sync.MonitorECGSynService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
         </service>
     </application>
 

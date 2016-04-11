@@ -1,11 +1,9 @@
-package com.example.trianaandaluciaprietogalvan.helloworldsupport;
+package com.example.trianaandaluciaprietogalvan.helloworldsupport.sync;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-
-import com.example.trianaandaluciaprietogalvan.helloworldsupport.sync.MonitorECGAuthenticator;
 
 public class MonitorECGAuthenticatorService extends Service {
 

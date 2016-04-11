@@ -43,10 +43,10 @@
     <string name="title_activity_grafica">Grafica</string>
     <string name="title_activity_perfil">Perfil</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_monitor">Monitor</string>
     <string name="account_type">helloworldsupport.trianaandaluciaprietogalvan.example.com</string>
+    <string name="content_authority">com.example.trianaandaluciaprietogalvan.helloworldsupport</string>
 
 
 </resources>

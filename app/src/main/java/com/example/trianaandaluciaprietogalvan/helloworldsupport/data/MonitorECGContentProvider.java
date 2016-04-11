@@ -7,6 +7,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.CONTENT_AUTHORITY;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.CardiologoEntry;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_CARDIOLOGO;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_PACIENTE;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_PRUEBA;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_REPORTE;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PacienteEntry;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PruebaEntry;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.ReporteEntry;
+
 public class MonitorECGContentProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -24,23 +34,23 @@ public class MonitorECGContentProvider extends ContentProvider {
 
     //paciente.idPaciente= ?
     private static final String sPacienteSettingId =
-            MonitorECGContrato.PacienteEntry.TABLE_NAME +
-                    "." + MonitorECGContrato.PacienteEntry._ID + " = ?";
+            PacienteEntry.TABLE_NAME +
+                    "." + PacienteEntry._ID + " = ?";
 
     //cardiologo.idCardiologo= ?
     private static final String sCardiologoSettingId =
-            MonitorECGContrato.CardiologoEntry.TABLE_NAME +
-                    "." + MonitorECGContrato.CardiologoEntry._ID + " = ?";
+            CardiologoEntry.TABLE_NAME +
+                    "." + CardiologoEntry._ID + " = ?";
 
     //prueba.idPrueba= ?
     private static final String sPruebaSettingId =
-            MonitorECGContrato.PruebaEntry.TABLE_NAME +
-                    "." + MonitorECGContrato.PruebaEntry._ID + " = ?";
+            PruebaEntry.TABLE_NAME +
+                    "." + PruebaEntry._ID + " = ?";
 
     //reporte.idReporte= ?
     private static final String sReporteSettingId =
-            MonitorECGContrato.ReporteEntry.TABLE_NAME +
-                    "." + MonitorECGContrato.ReporteEntry._ID + " = ?";
+            ReporteEntry.TABLE_NAME +
+                    "." + ReporteEntry._ID + " = ?";
 
 
     private static UriMatcher buildUriMatcher() {
@@ -48,9 +58,14 @@ public class MonitorECGContentProvider extends ContentProvider {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 
-        uriMatcher.addURI(MonitorECGContrato.CONTENT_AUTHORITY,MonitorECGContrato.PATH_PACIENTE,PACIENTE);
-        uriMatcher.addURI(MonitorECGContrato.CONTENT_AUTHORITY,MonitorECGContrato.PATH_PACIENTE + "/#",PACIENTE_WITH_ID);
-
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_PACIENTE,PACIENTE);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_PACIENTE + "/#",PACIENTE_WITH_ID);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_CARDIOLOGO,CARDIOLOGO);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_CARDIOLOGO + "/#",CARDIOLOGO_WITH_ID);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_PRUEBA,PRUEBA);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_PRUEBA + "/#",PRUEBA_WITH_ID);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_REPORTE,REPORTE);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_REPORTE + "/#",REPORTE_WITH_ID);
         return uriMatcher;
     }
 
@@ -69,16 +84,16 @@ public class MonitorECGContentProvider extends ContentProvider {
 
         switch (match) {
             case PACIENTE:
-                rowsDeleted = db.delete(MonitorECGContrato.PacienteEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(PacienteEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case CARDIOLOGO:
-                rowsDeleted = db.delete(MonitorECGContrato.CardiologoEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(CardiologoEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case PRUEBA:
-                rowsDeleted = db.delete(MonitorECGContrato.PruebaEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(PruebaEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             case REPORTE:
-                rowsDeleted = db.delete(MonitorECGContrato.ReporteEntry.TABLE_NAME, selection, selectionArgs);
+                rowsDeleted = db.delete(ReporteEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -99,21 +114,21 @@ public class MonitorECGContentProvider extends ContentProvider {
         switch (match) {
             // Student: Uncomment and fill out these two cases
             case PACIENTE:
-                return MonitorECGContrato.PacienteEntry.CONTENT_TYPE;
+                return PacienteEntry.CONTENT_TYPE;
             case PACIENTE_WITH_ID:
-                return MonitorECGContrato.PacienteEntry.CONTENT_ITEM_TYPE;
+                return PacienteEntry.CONTENT_ITEM_TYPE;
             case CARDIOLOGO:
-                return MonitorECGContrato.CardiologoEntry.CONTENT_ITEM_TYPE;
+                return CardiologoEntry.CONTENT_ITEM_TYPE;
             case CARDIOLOGO_WITH_ID:
-                return MonitorECGContrato.CardiologoEntry.CONTENT_TYPE;
+                return CardiologoEntry.CONTENT_TYPE;
             case PRUEBA:
-                return MonitorECGContrato.PruebaEntry.CONTENT_TYPE;
+                return PruebaEntry.CONTENT_TYPE;
             case PRUEBA_WITH_ID:
-                return MonitorECGContrato.PruebaEntry.CONTENT_ITEM_TYPE;
+                return PruebaEntry.CONTENT_ITEM_TYPE;
             case REPORTE:
-                return MonitorECGContrato.ReporteEntry.CONTENT_TYPE;
+                return ReporteEntry.CONTENT_TYPE;
             case REPORTE_WITH_ID:
-                return MonitorECGContrato.ReporteEntry.CONTENT_ITEM_TYPE;
+                return ReporteEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -127,27 +142,43 @@ public class MonitorECGContentProvider extends ContentProvider {
 
         switch (match) {
             case PACIENTE: {
-                long _id = db.insert(MonitorECGContrato.PacienteEntry.TABLE_NAME, null, values);
+                long _id = db.insert(PacienteEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = MonitorECGContrato.PacienteEntry.buildPacienteId((int) _id);
+                    returnUri = PacienteEntry.buildPacienteId((int) _id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
 
             case PRUEBA: {
-                long _id = db.insert(MonitorECGContrato.PruebaEntry.TABLE_NAME, null, values);
+                long _id = db.insert(PruebaEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = MonitorECGContrato.PruebaEntry.buildPruebaId((int) _id);
+                    returnUri = PruebaEntry.buildPruebaId((int) _id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
 
+            case CARDIOLOGO: {
+                long _id = db.insert(CardiologoEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = CardiologoEntry.buildCardiologoId((int) _id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+
+            case REPORTE:
+                long _id = db.insert(ReporteEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = ReporteEntry.buildReporteId((int) _id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri, null,false);
         return returnUri;
     }
 
@@ -217,7 +248,7 @@ public class MonitorECGContentProvider extends ContentProvider {
     private Cursor getReporte(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        return db.query(MonitorECGContrato.ReporteEntry.TABLE_NAME,
+        return db.query(ReporteEntry.TABLE_NAME,
                 projection,
                 selection,
                 selectionArgs,
@@ -228,9 +259,9 @@ public class MonitorECGContentProvider extends ContentProvider {
 
     private Cursor getReporteById(Uri uri, String[] projection, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int id = MonitorECGContrato.ReporteEntry.getIdSettingFromUri(uri);
+        int id = ReporteEntry.getIdSettingFromUri(uri);
 
-        return db.query(MonitorECGContrato.ReporteEntry.TABLE_NAME,
+        return db.query(ReporteEntry.TABLE_NAME,
                 projection,
                 sReporteSettingId,
                 new String[]{Integer.toString(id)},
@@ -243,7 +274,12 @@ public class MonitorECGContentProvider extends ContentProvider {
     private Cursor getPrueba(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        return db.query(MonitorECGContrato.PruebaEntry.TABLE_NAME,
+        String join_prueba_reporte = PruebaEntry.TABLE_NAME + " INNER JOIN "+
+                                    ReporteEntry.TABLE_NAME+" ON "+
+                                    PruebaEntry.TABLE_NAME +"."+PruebaEntry.COLUMN_REPORTE_ID_REPORTE+" = "+
+                                    ReporteEntry.TABLE_NAME+"."+ReporteEntry._ID;
+
+        return db.query(join_prueba_reporte,
                 projection,
                 selection,
                 selectionArgs,
@@ -254,9 +290,9 @@ public class MonitorECGContentProvider extends ContentProvider {
 
     private Cursor getPruebaById(Uri uri, String[] projection, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int id = MonitorECGContrato.PruebaEntry.getIdSettingFromUri(uri);
+        int id = PruebaEntry.getIdSettingFromUri(uri);
 
-        return db.query(MonitorECGContrato.PruebaEntry.TABLE_NAME,
+        return db.query(PruebaEntry.TABLE_NAME,
                 projection,
                 sPruebaSettingId,
                 new String[]{Integer.toString(id)},
@@ -269,7 +305,7 @@ public class MonitorECGContentProvider extends ContentProvider {
     private Cursor getCardiologo(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        return db.query(MonitorECGContrato.CardiologoEntry.TABLE_NAME,
+        return db.query(CardiologoEntry.TABLE_NAME,
                 projection,
                 selection,
                 selectionArgs,
@@ -280,9 +316,9 @@ public class MonitorECGContentProvider extends ContentProvider {
 
     private Cursor getCardiologoById(Uri uri, String[] projection, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int id = MonitorECGContrato.CardiologoEntry.getIdSettingFromUri(uri);
+        int id = CardiologoEntry.getIdSettingFromUri(uri);
 
-        return db.query(MonitorECGContrato.CardiologoEntry.TABLE_NAME,
+        return db.query(CardiologoEntry.TABLE_NAME,
                 projection,
                 sCardiologoSettingId,
                 new String[]{Integer.toString(id)},
@@ -296,7 +332,7 @@ public class MonitorECGContentProvider extends ContentProvider {
     private Cursor getPaciente(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        return db.query(MonitorECGContrato.PacienteEntry.TABLE_NAME,
+        return db.query(PacienteEntry.TABLE_NAME,
                 projection,
                 selection,
                 selectionArgs,
@@ -307,9 +343,9 @@ public class MonitorECGContentProvider extends ContentProvider {
 
     private Cursor getPacienteById(Uri uri, String[] projection, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-        int id = MonitorECGContrato.PacienteEntry.getIdSettingFromUri(uri);
+        int id = PacienteEntry.getIdSettingFromUri(uri);
 
-        return db.query(MonitorECGContrato.PacienteEntry.TABLE_NAME,
+        return db.query(PacienteEntry.TABLE_NAME,
                 projection,
                 sPacienteSettingId,
                 new String[]{Integer.toString(id)},
@@ -329,16 +365,16 @@ public class MonitorECGContentProvider extends ContentProvider {
 
         switch (match) {
             case PACIENTE:
-                rowsUpdated = db.update(MonitorECGContrato.PacienteEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(PacienteEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case PRUEBA:
-                rowsUpdated = db.update(MonitorECGContrato.PruebaEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(PruebaEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case CARDIOLOGO:
-                rowsUpdated = db.update(MonitorECGContrato.CardiologoEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(CardiologoEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             case REPORTE:
-                rowsUpdated = db.update(MonitorECGContrato.ReporteEntry.TABLE_NAME, values, selection, selectionArgs);
+                rowsUpdated = db.update(ReporteEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -350,4 +386,5 @@ public class MonitorECGContentProvider extends ContentProvider {
 
         return rowsUpdated;
     }
+
 }

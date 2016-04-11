@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 dependencies {
@@ -30,4 +34,5 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.0'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.1.2'
+    compile 'com.jakewharton:butterknife:7.0.1'
 }

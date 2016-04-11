@@ -3,14 +3,17 @@ package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorECGUtils;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.NetworkUtil;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import retrofit2.Call;
@@ -53,13 +56,29 @@ public class LoginFinal extends AppCompatActivity{
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 Boolean resp = response.body();
                 //si existe el paciente
-                if(resp){
+                if (resp) {
                     MonitorECGUtils.guardarUltimoUsuarioEnSesion(LoginFinal.this, correo);
                     finishLogin(correo, pass);
-                    Intent intentHistorial = new Intent(LoginFinal.this,MainActivity.class);
+                    Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
                     startActivity(intentHistorial);
+                    AccountManager am = AccountManager.get(getBaseContext());
+                    String accountType = getString(R.string.account_type);
+                    Account[] accounts = am.getAccountsByType(accountType);
+                    Account cuentaEncontrada = null;
+                    for (Account cuenta : accounts) {
+                        if (cuenta.name.equals(correo)) {
+                            cuentaEncontrada = cuenta;
+                            break;
+                        }
+                    }
+                    if (cuentaEncontrada != null) {
+                        String contentAuthority = getString(R.string.content_authority);
+                        //hacer el cotent provider que se actualize automaticamente ante algun cambio
+                        ContentResolver.setIsSyncable(cuentaEncontrada, contentAuthority, 1);
+                        ContentResolver.setSyncAutomatically(cuentaEncontrada, contentAuthority, true);
+                    }
                     finish();
-                }else{
+                } else {
                     authenticatorFinish(null);
                 }
             }
@@ -122,14 +141,19 @@ public class LoginFinal extends AppCompatActivity{
                 authenticatorFinish(null);
                 Log.e(LOG_TAG,"No se creo correctamente la cuenta");
             }
-
         }
-
-
     }
 
     public void onClickRegistrarse(View view) {
-        Intent intentRegistrarse = new Intent(this,Registrarse.class);
-        startActivity(intentRegistrarse);
+        //verificar si hay conexion
+        boolean online = NetworkUtil.isOnline(this);
+        if(online){
+            Intent intentRegistrarse = new Intent(this,Registrarse.class);
+            startActivity(intentRegistrarse);
+        }
+        else{
+            Toast.makeText(this,"Verifica tu conexión",Toast.LENGTH_SHORT).show();
+        }
     }
+
 }

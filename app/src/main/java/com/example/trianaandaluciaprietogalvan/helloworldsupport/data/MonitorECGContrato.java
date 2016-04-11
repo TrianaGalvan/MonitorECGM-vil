@@ -19,7 +19,7 @@ public class MonitorECGContrato {
     public static final String PATH_CARDIOLOGO = "cardiologo";
 
 
-    public static final class PacienteEntry implements BaseColumns{
+    public static final class PacienteEntry  implements BaseColumns{
         public static final String TABLE_NAME = "paciente";
 
         public static final String COLUMN_NOMBRE = "nombre";
@@ -37,6 +37,11 @@ public class MonitorECGContrato {
         public static final String COLUMN_ALTURA = "altura";
         public static final String COLUMN_FECHA_MODIFICACION = "fechaModificacion";
         public static final String COLUMN_CARDIOLOGO_ID_CARDIOLOGO = "idCardiologo";
+        public static final String COLUMN_CONTRASENA = "contrasena";
+        public static final String BANDERA_INSERTAR = "insertar";
+        public static final String BANDERA_ACTUALIZAR = "actualizar";
+        public static final String BANDERA_ELIMINAR = "eliminar";
+
 
         public static final Uri CONTENT_URI = BASE_CONTENT_AUTHORITY.buildUpon().appendPath(PATH_PACIENTE).build();
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_PACIENTE;
@@ -49,6 +54,7 @@ public class MonitorECGContrato {
         public static int getIdSettingFromUri(Uri uri){
             return Integer.parseInt(uri.getPathSegments().get(1));
         }
+
     }
 
     public static final class CardiologoEntry implements BaseColumns{
@@ -68,6 +74,10 @@ public class MonitorECGContrato {
 
         public static int getIdSettingFromUri(Uri uri){
             return Integer.parseInt(uri.getPathSegments().get(1));
+        }
+
+        public static Uri buildCardiologoId(int id) {
+            return ContentUris.withAppendedId(CONTENT_URI,id);
         }
     }
 
@@ -103,8 +113,8 @@ public class MonitorECGContrato {
     public static final class ReporteEntry implements BaseColumns {
         public static final String TABLE_NAME = "reporte";
 
-        public static final String COLUMN_RECOMENDACIONES = "fecha";
-        public static final String COLUMN_ESTATUS = "hora";
+        public static final String COLUMN_RECOMENDACIONES = "recomendaciones";
+        public static final String COLUMN_ESTATUS = "estatus";
         public static final String COLUMN_OBSERVACIONES = "observaciones";
 
 

@@ -37,36 +37,47 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Nombre"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp"
+                    android:inputType="textPersonName"
+                    android:id="@+id/txtNombre"/>
 
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Apellido paterno"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:inputType="textPersonName"
+                    android:id="@+id/txtApp"/>
 
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Apellido materno"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:inputType="textPersonName"
+                    android:id="@+id/txtApm"/>
 
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="CURP"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:inputType="text"
+                    android:id="@+id/txtCurp"/>
 
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Edad"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:inputType="number"
+                    android:id="@+id/txtEdad"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/txtSexo"
@@ -75,32 +86,53 @@
                         android:layout_marginTop="8dp"
                         android:text="Sexo:" />
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="5dp"
-                        android:text="Femenino" />
+                    <RadioGroup
+                        android:id="@+id/radioSex"
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal">
 
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="9dp"
-                        android:layout_marginTop="5dp"
-                        android:text="Masculino" />
+                        <RadioButton
+                            android:id="@+id/radioFemenino"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="5dp"
+                            android:text="Femenino" />
+
+                        <RadioButton
+                            android:id="@+id/radioMasculino"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="9dp"
+                            android:layout_marginTop="5dp"
+                            android:text="Masculino" />
+                    </RadioGroup>
                 </LinearLayout>
 
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Correo Electrónico"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:inputType="textEmailAddress"
+                    android:id="@+id/txtCorreo"/>
 
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:hint="Teléfono"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_marginTop="12dp"
+                    android:inputType="phone"
+                    android:id="@+id/txtTelefono"/>
+
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Contraseña"
+                    android:layout_marginTop="12dp"
+                    android:inputType="textPassword"
+                    android:id="@+id/txtContrasena"/>
 
                 <Button
                     android:layout_width="114dp"

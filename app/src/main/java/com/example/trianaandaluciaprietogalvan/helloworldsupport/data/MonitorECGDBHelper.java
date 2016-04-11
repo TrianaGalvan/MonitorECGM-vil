@@ -7,7 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PacienteEntry;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PruebaEntry;
 
-import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.*;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.CardiologoEntry;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.ReporteEntry;
 
 /**
  * Created by trianaandaluciaprietogalvan on 02/04/16.
@@ -31,7 +32,7 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         PacienteEntry.COLUMN_APP  + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_APM + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_SEXO + " TEXT, "+
-                        PacienteEntry.COLUMN_EDAD + " TEXT, "+
+                        PacienteEntry.COLUMN_EDAD + " INTEGER, "+
                         PacienteEntry.COLUMN_CURP + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_CORREO  + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_TELEFONO  + " TEXT, "+
@@ -42,6 +43,10 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         PacienteEntry.COLUMN_ALTURA  + " REAL, " +
                         PacienteEntry.COLUMN_FECHA_MODIFICACION  + " TEXT, "+
                         PacienteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO+ " INTEGER NOT NULL, "+
+                        PacienteEntry.COLUMN_CONTRASENA+ " TEXT NOT NULL, "+
+                        PacienteEntry.BANDERA_ACTUALIZAR+ " INTEGER, "+
+                        PacienteEntry.BANDERA_INSERTAR+ " INTEGER, "+
+                        PacienteEntry.BANDERA_ELIMINAR+ " INTEGER, "+
                         //FOREIGN KEY a paciente
                         " FOREIGN KEY ("+PacienteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO+") REFERENCES "+
                         CardiologoEntry.TABLE_NAME + " ("+CardiologoEntry._ID+"), " +
@@ -100,4 +105,5 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
         db.execSQL("DROP TABLE IF EXISTS "+PacienteEntry.TABLE_NAME);
         onCreate(db);
     }
+
 }
