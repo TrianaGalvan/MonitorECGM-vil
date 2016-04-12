@@ -3,6 +3,7 @@ package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +20,8 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Cardio
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Paciente;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -37,6 +40,13 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
     public static final String PARAM_TELEFONO = "telefono";
     public static final String PARAM_CORREO = "correo";
     public static final String PARAM_CONTRASENA = "contrasena";
+
+    //Proyeccion para verificar si el cardiologo ya existe
+    public static final String[] PROYECCION_VERIFICAR_CARDIOLOGO = new String[]{
+        CardiologoEntry.TABLE_NAME+"."+CardiologoEntry._ID
+    };
+    //Columna del id del cardiologo
+    public static final int COLUMN_ID_CARDIOLOGO = 0;
 
     //obtener las vistas con la libreria Butter Knife
     @Bind(R.id.txtFrecuencia)
@@ -112,23 +122,37 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         paciente.apellidoPaterno = bundle.getString(PARAM_APP);
         paciente.apellidoMaterno = bundle.getString(PARAM_APM);
         paciente.curp = bundle.getString(PARAM_CURP);
-        paciente.edad = Integer.parseInt(bundle.getString(PARAM_EDAD));
+        String edad = bundle.getString(PARAM_EDAD);
+        paciente.edad = bundle.getString(PARAM_EDAD).isEmpty() ? 0 : Integer.parseInt(bundle.getString(PARAM_EDAD));
         paciente.correo = bundle.getString(PARAM_CORREO);
         paciente.telefono = bundle.getString(PARAM_TELEFONO);
-        paciente.sexo = bundle.getString(PARAM_SEXO).charAt(0);
+
+        paciente.sexo = bundle.getString(PARAM_SEXO).isEmpty() ? 'N' :bundle.getString(PARAM_SEXO).charAt(0);
         paciente.contrasena = bundle.getString(PARAM_CONTRASENA);
-        paciente.frecuenciaRespiratoria = Integer.parseInt(sFrecuencia);
-        paciente.presionArterial = Integer.parseInt(sPresionArterial);
-        paciente.altura = Double.parseDouble(sAltura);
-        paciente.peso = Integer.parseInt(sPeso);
+        paciente.frecuenciaRespiratoria = sFrecuencia.isEmpty() ? 0 : Integer.parseInt(sFrecuencia);
+        paciente.presionArterial = sPresionArterial.isEmpty() ? 0: Integer.parseInt(sPresionArterial);
+        paciente.altura = sAltura.isEmpty() ? 0 : Double.parseDouble(sAltura);
+        paciente.peso = sPeso.isEmpty() ? 0 : Integer.parseInt(sPeso);
         paciente.cardiologo = car;
+        //calcular el imc
+        if(paciente.peso != 0 && paciente.altura != 0){
+            paciente.imc = paciente.peso / Math.pow(paciente.altura,2);
+        }else{
+            paciente.imc = 0;
+        }
+
+        //obtener la fecha
+        String date = getDate();
+        paciente.fechamodificacion = date;
 
         ServicioWeb.insertarPaciente(paciente, new Callback<Paciente>() {
             @Override
             public void onResponse(Call<Paciente> call, Response<Paciente> response) {
                 if(response.isSuccessful()){
                     //insertar en la base de datos
-                    insertarCardiologo(car, rs);
+                    //verificar si ya existe el cardiologo registrado en la bd
+                    verificarRegistroMedico(car,rs);
+                    //insertarCardiologo(car, rs);
                     Paciente p = response.body();
                     insertarPaciente(p,rs);
                     Toast.makeText(RegistrarDatosMedicos.this, "Fuiste registrado con éxito", Toast.LENGTH_SHORT).show();
@@ -155,10 +179,17 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         values.put(CardiologoEntry.COLUMN_APP,car.apellidoPaterno);
         values.put(CardiologoEntry.COLUMN_APM, car.apellidoMaterno);
 
-        try{
-            rs.insert(CardiologoEntry.CONTENT_URI, values);
-        }catch (Exception e){
-            e.printStackTrace();
+        rs.insert(CardiologoEntry.CONTENT_URI, values);
+    }
+
+    public void verificarRegistroMedico(Cardiologo car,ContentResolver rs){
+        Uri uriCardiologoId = CardiologoEntry.buildCardiologoId(car.idCardiologo);
+        Cursor cursor = rs.query(uriCardiologoId, PROYECCION_VERIFICAR_CARDIOLOGO, null, null, null);
+        //verificar si el cursor tiene datos
+        int count = cursor.getCount();
+        //no existe el cardiologo regstrado en la bd
+        if(count == 0){
+            insertarCardiologo(car,rs);
         }
     }
 
@@ -184,4 +215,11 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
 
         Uri insert = rs.insert(PacienteEntry.CONTENT_URI, values);
     }
+
+    public String getDate(){
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(c.getTime());
+    }
+
 }

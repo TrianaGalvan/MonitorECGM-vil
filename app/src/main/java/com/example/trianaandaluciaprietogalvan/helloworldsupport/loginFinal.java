@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.AccountUtil;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorECGUtils;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.NetworkUtil;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
@@ -51,43 +52,44 @@ public class LoginFinal extends AppCompatActivity{
         final String correo = correoTxt.getText().toString();
         final String pass = contrasenaTxt.getText().toString();
 
-        ServicioWeb.loginPaciente(correo, pass, new Callback<Boolean>() {
-            @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                Boolean resp = response.body();
-                //si existe el paciente
-                if (resp) {
-                    MonitorECGUtils.guardarUltimoUsuarioEnSesion(LoginFinal.this, correo);
-                    finishLogin(correo, pass);
-                    Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
-                    startActivity(intentHistorial);
-                    AccountManager am = AccountManager.get(getBaseContext());
-                    String accountType = getString(R.string.account_type);
-                    Account[] accounts = am.getAccountsByType(accountType);
-                    Account cuentaEncontrada = null;
-                    for (Account cuenta : accounts) {
-                        if (cuenta.name.equals(correo)) {
-                            cuentaEncontrada = cuenta;
-                            break;
+        //verificar conexion de red
+        if(NetworkUtil.isOnline(this)){
+            ServicioWeb.loginPaciente(correo, pass, new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                    Boolean resp = response.body();
+                    //si existe el paciente
+                    if (resp) {
+                        MonitorECGUtils.guardarUltimoUsuarioEnSesion(LoginFinal.this, correo);
+                        finishLogin(correo, pass);
+                        Account cuentaEncontrada = AccountUtil.getAccount(getBaseContext());
+
+                        if (cuentaEncontrada != null) {
+                            String contentAuthority = getString(R.string.content_authority);
+                            //hacer el cotent provider que se actualize automaticamente ante algun cambio
+                            ContentResolver.setIsSyncable(cuentaEncontrada, contentAuthority, 1);
+                            ContentResolver.setSyncAutomatically(cuentaEncontrada, contentAuthority, true);
                         }
+
+                        Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
+                        startActivity(intentHistorial);
+                        finish();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Usuario  o contraseña incorrectos", Toast.LENGTH_LONG).show();
+                        authenticatorFinish(null);
                     }
-                    if (cuentaEncontrada != null) {
-                        String contentAuthority = getString(R.string.content_authority);
-                        //hacer el cotent provider que se actualize automaticamente ante algun cambio
-                        ContentResolver.setIsSyncable(cuentaEncontrada, contentAuthority, 1);
-                        ContentResolver.setSyncAutomatically(cuentaEncontrada, contentAuthority, true);
-                    }
-                    finish();
-                } else {
+                }
+
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
                     authenticatorFinish(null);
                 }
-            }
+            });
+        }else{
+            Toast.makeText(LoginFinal.this, "Verifica tu conexión a internet", Toast.LENGTH_SHORT).show();
+        }
 
-            @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-                authenticatorFinish(null);
-            }
-        });
+
 
     }
 
@@ -139,7 +141,7 @@ public class LoginFinal extends AppCompatActivity{
             //no se creo correctamente 
             else{
                 authenticatorFinish(null);
-                Log.e(LOG_TAG,"No se creo correctamente la cuenta");
+                Log.e(LOG_TAG, "No se creo correctamente la cuenta");
             }
         }
     }
@@ -152,7 +154,7 @@ public class LoginFinal extends AppCompatActivity{
             startActivity(intentRegistrarse);
         }
         else{
-            Toast.makeText(this,"Verifica tu conexión",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Verifica tu conexión a internet",Toast.LENGTH_SHORT).show();
         }
     }
 

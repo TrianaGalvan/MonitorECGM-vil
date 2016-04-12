@@ -14,7 +14,7 @@ public class Paciente {
     public String contrasena;
     public Integer peso;
     public Integer presionArterial;
-    public Integer imc;
+    public double imc;
     public Integer frecuenciaRespiratoria;
     public Double altura;
     public String fechamodificacion;
