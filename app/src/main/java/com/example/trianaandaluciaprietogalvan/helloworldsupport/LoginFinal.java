@@ -58,25 +58,27 @@ public class LoginFinal extends AppCompatActivity{
                 @Override
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                     Boolean resp = response.body();
-                    //si existe el paciente
-                    if (resp) {
-                        MonitorECGUtils.guardarUltimoUsuarioEnSesion(LoginFinal.this, correo);
-                        finishLogin(correo, pass);
-                        Account cuentaEncontrada = AccountUtil.getAccount(getBaseContext());
+                    if(resp != null){
+                        //si existe el paciente
+                        if (resp) {
+                            MonitorECGUtils.guardarUltimoUsuarioEnSesion(LoginFinal.this, correo);
+                            finishLogin(correo, pass);
+                            Account cuentaEncontrada = AccountUtil.getAccount(getBaseContext());
 
-                        if (cuentaEncontrada != null) {
-                            String contentAuthority = getString(R.string.content_authority);
-                            //hacer el cotent provider que se actualize automaticamente ante algun cambio
-                            ContentResolver.setIsSyncable(cuentaEncontrada, contentAuthority, 1);
-                            ContentResolver.setSyncAutomatically(cuentaEncontrada, contentAuthority, true);
+                            if (cuentaEncontrada != null) {
+                                String contentAuthority = getString(R.string.content_authority);
+                                //hacer el cotent provider que se actualize automaticamente ante algun cambio
+                                ContentResolver.setIsSyncable(cuentaEncontrada, contentAuthority, 1);
+                                ContentResolver.setSyncAutomatically(cuentaEncontrada, contentAuthority, true);
+                            }
+
+                            Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
+                            startActivity(intentHistorial);
+                            finish();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Usuario  o contraseña incorrectos", Toast.LENGTH_LONG).show();
+                            authenticatorFinish(null);
                         }
-
-                        Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
-                        startActivity(intentHistorial);
-                        finish();
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Usuario  o contraseña incorrectos", Toast.LENGTH_LONG).show();
-                        authenticatorFinish(null);
                     }
                 }
 

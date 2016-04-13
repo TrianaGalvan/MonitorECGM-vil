@@ -27,7 +27,7 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         final String SQL_CREATE_PACIENTE_TABLE =
                 "CREATE TABLE "+ PacienteEntry.TABLE_NAME +"("+
-                        PacienteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                        PacienteEntry._ID + " INTEGER PRIMARY KEY, "+
                         PacienteEntry.COLUMN_NOMBRE  + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_APP  + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_APM + " TEXT NOT NULL, "+

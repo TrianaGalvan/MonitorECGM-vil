@@ -84,7 +84,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
                             List<Prueba> pruebasNoExistentes = verificarPruebasExistentes(lista);
                             //No hay pruebas por insertar
                             if(pruebasNoExistentes.size() != 0){
-                                insertarPruebas(lista);
+                                insertarPruebas(pruebasNoExistentes);
                             }
                         }
                     }
@@ -106,6 +106,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
 
         for (Prueba p : pruebas){
             ContentValues contentValues = new ContentValues();
+            contentValues.put(PruebaEntry._ID,p.idPrueba);
             contentValues.put(PruebaEntry.COLUMN_FECHA,p.fecha);
             contentValues.put(PruebaEntry.COLUMN_FECHA_ENVIO,p.fechaEnvio);
             contentValues.put(PruebaEntry.COLUMN_HORA,p.hora);
