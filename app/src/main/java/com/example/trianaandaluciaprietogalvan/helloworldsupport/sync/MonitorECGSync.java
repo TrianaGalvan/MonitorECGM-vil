@@ -8,6 +8,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SyncResult;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +22,7 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Report
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Response;
@@ -32,8 +35,18 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
     public static final String SINCRONIZACION = "sincronizacion";
     public static final int SINCRONIZACION_PRUEBA = 100;
 
-    //Parametros para obtener pruebas
     public static final String PARAM_EMAIL = "email";
+
+
+    //Proyeccion para verificar si el cardiologo ya existe
+    public static final String[] PROYECCION_VERIFICAR_PRUEBA = new String[]{
+            PruebaEntry.TABLE_NAME+"."+ PruebaEntry._ID
+    };
+    //Columna del id del cardiologo
+    public static final int COLUMN_ID_PRUEBA = 0;
+
+    //Content resolver
+    ContentResolver rs = getContext().getContentResolver();
 
     ContentResolver mContentResolver;
 
@@ -66,7 +79,14 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
                     Response<List<Prueba>> pruebas = ServicioWeb.obtenerPruebas(email);
                     if(pruebas.isSuccessful()){
                         List<Prueba> lista = pruebas.body();
-                        insertarPruebas(lista);
+                        if(lista.size() != 0){
+                            //verificar que las pruebas no esten registradas en la bd
+                            List<Prueba> pruebasNoExistentes = verificarPruebasExistentes(lista);
+                            //No hay pruebas por insertar
+                            if(pruebasNoExistentes.size() != 0){
+                                insertarPruebas(lista);
+                            }
+                        }
                     }
                     else{
                         Log.e("MonitorECGSync","Error al obtener la lista de las pruebas");
@@ -82,6 +102,8 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
     public void insertarPruebas(List<Prueba> pruebas){
         //obtener datos locales de las pruebas
         //fixme Verificar que los datos que estoy intertando NO esten previamente registrados en la bd local
+        //verificar que las pruebas no esten registradas en la bd
+
         for (Prueba p : pruebas){
             ContentValues contentValues = new ContentValues();
             contentValues.put(PruebaEntry.COLUMN_FECHA,p.fecha);
@@ -98,6 +120,20 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
 
             mContentResolver.insert(PruebaEntry.CONTENT_URI,contentValues);
         }
+    }
+
+    public List<Prueba> verificarPruebasExistentes(List<Prueba> pruebas){
+        List<Prueba> listaNuevasPruebas = new ArrayList<>();
+        for (Prueba prueba : pruebas){
+            Uri uriPruebaId = PruebaEntry.buildPruebaId(prueba.idPrueba);
+            Cursor cursor = rs.query(uriPruebaId, PROYECCION_VERIFICAR_PRUEBA, null, null, null);
+            //verificar si el cursor tiene datos
+            int count = cursor.getCount();
+            //no existe el cardiologo regstrado en la bd
+            if(count == 0)
+                listaNuevasPruebas.add(prueba);
+        }
+        return listaNuevasPruebas;
     }
 
     public void insertarReporte(Reporte reporte){

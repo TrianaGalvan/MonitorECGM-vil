@@ -57,7 +57,8 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
-        //// FIXME: 11/04/16 Verificar porque no se estan obteniendo solo las pruebas de cierto paciente.
+
+        //Obtener pruebas
         obtenerPruebas(AccountUtil.getAccount(getContext()));
 
         //Implementando LOADERS

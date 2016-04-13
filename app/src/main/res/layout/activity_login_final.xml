@@ -34,6 +34,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:paddingTop="4dp"
+                android:inputType="textEmailAddress"
                 android:layout_marginTop="8dp"
                 android:textIsSelectable="false" />
 
@@ -81,8 +82,7 @@
                 android:layout_alignParentStart="true"
                 android:paddingTop="4dp"
                 android:layout_marginTop="1dp"
-                android:clickable="true"
-                android:onClick="onClickRecuperarContrasena"/>
+                android:clickable="true"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -92,7 +92,7 @@
                 android:id="@+id/textView5"
                 android:textSize="17dp"
                 android:clickable="true"
-                android:onClick="onClickRecuperarcontrasena"
+                android:onClick="onClickRecuperarContrasena"
                 android:textStyle="italic"
                 android:layout_below="@+id/button"
                 android:layout_alignParentLeft="true"

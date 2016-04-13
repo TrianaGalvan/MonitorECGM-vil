@@ -39,7 +39,7 @@ public class LoginFinal extends AppCompatActivity{
 
     }
 
-    public void onClickRecuperarcontrasena(View view) {
+    public void onClickRecuperarContrasena(View view) {
         Intent intentRecuperarContrasena = new Intent();
         intentRecuperarContrasena.setClass(this,RecuperarContrasena.class);
         startActivity(intentRecuperarContrasena);

@@ -1,7 +1,9 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
 import android.accounts.AccountManager;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorECGUtils;
 
 
@@ -25,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private LinearLayout linearLayout;
     private ListView listView1;
+
+
 
     public MainActivity() {
     }
@@ -145,6 +150,13 @@ public class MainActivity extends AppCompatActivity {
                     MonitorECGUtils.limpiarUltimoUsuarioEnSesion(getBaseContext());
                     AccountManager am = AccountManager.get(getBaseContext());
                     am.addAccount(getString(R.string.account_type), null, null, null,MainActivity.this, null, null);
+                    //borrrar las pruebas del usuario en sesion
+                    ContentResolver rs = getContentResolver();
+                    Uri uriPrueba = MonitorECGContrato.PruebaEntry.CONTENT_URI;
+                    int rowsDeleted = rs.delete(uriPrueba,null, null);
+
+                    Uri uriReporte = MonitorECGContrato.ReporteEntry.CONTENT_URI;
+                    int rowsDeletedr = rs.delete(uriReporte,null,null);
                     finish();
                     break;
                 default:
