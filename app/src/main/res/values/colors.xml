@@ -12,4 +12,5 @@
     <color name="revisado">#1565C0</color>
     <color name="no_revisado">#C62828</color>
     <color name="inputs">#B3E5FC</color>
+    <color name="hint">#B3FFFFFF</color>
 </resources>

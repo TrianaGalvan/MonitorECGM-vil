@@ -1,19 +1,46 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.accounts.Account;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.sync.MonitorECGSync;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.AccountUtil;
 
-public class Historial extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class Historial extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+    public static final int PRUEBA_LOADER = 1;
+
+    public static final String[] PROYECCIONES_PRUEBA = new String[]{
+            MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+ MonitorECGContrato.PruebaEntry._ID,
+            MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FECHA,
+            MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+MonitorECGContrato.ReporteEntry.COLUMN_ESTATUS
+    };
+
+    public static final int COLUMN_ID = 0;
+    public static final int COLUMN_FECHA = 1;
+    public static final int COLUMN_ESTATUS = 2;
+
+    HistorialAdapter adapter;
+
+
     public Historial() {
         // Required empty public constructor
     }
@@ -28,21 +55,23 @@ public class Historial extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
         super.onActivityCreated(savedInstanceState);
+
+        //Obtener pruebas
+        obtenerPruebas(AccountUtil.getAccount(getContext()));
+
+        //Implementando LOADERS
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.initLoader(PRUEBA_LOADER,null,this);
+
         ListView lista = null;
 
-        final HistorialItem rows_data[] = new HistorialItem[]
-                {
-                        new HistorialItem("01/12/2015","Pendiente"),
-                        new HistorialItem("01/12/2015","Revisado"),
-                        new HistorialItem("05/10/2015","Revisado"),
-                        new HistorialItem("10/11/2015","No revisado")
-                };
         //obtener el contexto del fragmento
         FragmentActivity fragmentActivity =  getActivity();
         //crear el adapter para la lista del menu
-        HistorialAdapter adapter = new HistorialAdapter(fragmentActivity,
-                R.layout.historial_row,rows_data);
+        adapter = new HistorialAdapter(fragmentActivity,
+                R.layout.historial_row);
 
         FrameLayout frame = (FrameLayout)getView();
 
@@ -73,12 +102,14 @@ public class Historial extends Fragment {
         });
 
         //manejar el evento de click en un item de la lista
+        /*assert lista != null;
+
+        fixme  Lanzar una actividad NO un fragmento
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                HistorialItem item = rows_data[position];
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
-                //open Intent
+                //open Inten
                 VerElectrocardiograma ve = new VerElectrocardiograma();
                 FragmentActivity activity = getActivity();
                 // Insert the fragment by replacing any existing fragment
@@ -87,6 +118,52 @@ public class Historial extends Fragment {
 
                 activity.setTitle("Ver electrocardiograma");
             }
-        });
+        });*/
+    }
+
+    public void obtenerPruebas(Account account){
+        Bundle bundle = new Bundle();
+        bundle.putString(MonitorECGSync.PARAM_EMAIL,account.name);
+        bundle.putInt(MonitorECGSync.SINCRONIZACION,MonitorECGSync.SINCRONIZACION_PRUEBA);
+
+        MonitorECGSync.syncInmediatly(getContext(),account,bundle);
+    }
+
+
+    @Override
+    public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if(id == PRUEBA_LOADER){
+            return  new CursorLoader(getContext(), MonitorECGContrato.PruebaEntry.CONTENT_URI, PROYECCIONES_PRUEBA,null,null,null);
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        if(loader.getId() == PRUEBA_LOADER){
+            if(data.getCount() != 0){
+                List<Prueba> pruebas = new ArrayList<>();
+                data.moveToFirst();
+                do {
+                    Prueba prueba = new Prueba();
+                    prueba.reporte = new Reporte();
+                    prueba.idPrueba = data.getInt(COLUMN_ID);
+                    prueba.fecha = data.getString(COLUMN_FECHA);
+                    prueba.reporte.estatus = data.getInt(COLUMN_ESTATUS);
+                    pruebas.add(prueba);
+                }while (data.moveToNext());
+                //poner al adapter las pruebas que se mostraran
+                adapter.setPruebas(pruebas);
+            }
+        }
+        else{
+
+        }
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
+        adapter.setPruebas(null);
     }
 }
