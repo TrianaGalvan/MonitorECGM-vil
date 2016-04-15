@@ -42,16 +42,11 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+ MonitorECGContrato.PruebaEntry._ID,
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FECHA,
             MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+MonitorECGContrato.ReporteEntry.COLUMN_ESTATUS
-
     };
 
     public static final int COLUMN_ID = 0;
     public static final int COLUMN_FECHA = 1;
     public static final int COLUMN_ESTATUS = 2;
-
-    public static final String BUNDLE_FRECUENCIA_CARDIACA = "frecuenciaCardiaca";
-    public static final String BUNDLE_FECHA_ECG = "fechaECG";
-    public static final String BUNDLE_RECOMENDACIONES = "recomendaciones";
 
     HistorialAdapter adapter;
 
@@ -119,7 +114,6 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
         //manejar el evento de click en un item de la lista
         assert lista != null;
 
-        //fixme  Lanzar una actividad NO un fragmento
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

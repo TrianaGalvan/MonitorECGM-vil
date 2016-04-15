@@ -106,7 +106,6 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
 
     public void insertarPruebas(List<Prueba> pruebas){
         //obtener datos locales de las pruebas
-        //fixme Verificar que los datos que estoy intertando NO esten previamente registrados en la bd local
         //verificar que las pruebas no esten registradas en la bd
 
         for (Prueba p : pruebas){
@@ -118,6 +117,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             contentValues.put(PruebaEntry.COLUMN_HORA_ENVIO,p.horaEnvio);
             contentValues.put(PruebaEntry.COLUMN_OBSERVACIONES,p.observaciones);
             contentValues.put(PruebaEntry.COLUMN_PACIENTE_ID_PACIENTE,p.paciente.idPaciente);
+            contentValues.put(PruebaEntry.COLUMN_FRECUENCIA_CARDIACA,p.frecuenciaCardiaca);
 
             //crear el reporte
             insertarReporte(p.reporte);

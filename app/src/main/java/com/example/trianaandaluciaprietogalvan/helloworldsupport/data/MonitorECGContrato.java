@@ -129,5 +129,7 @@ public class MonitorECGContrato {
         public static int getIdSettingFromUri(Uri uri){
             return Integer.parseInt(uri.getPathSegments().get(1));
         }
+
+
     }
 }

@@ -19,17 +19,14 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
     public static final int PRUEBA_DETALLE_LOADER = 2;
     public static final int CARDIOLOGO_LOADER = 3;
 
-    public static final String BUNDLE_FRECUENCIA_CARDIACA = "frecuenciaCardiaca";
-    public static final String BUNDLE_FECHA_ECG = "fechaECG";
-    public static final String BUNDLE_RECOMENDACIONES = "recomendaciones";
-
     //PROYECCIONES PRUEBA
     public static final String[] PROYECCIONES_PRUEBA_DETALLE = new String[]{
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FECHA,
             MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+MonitorECGContrato.ReporteEntry.COLUMN_RECOMENDACIONES,
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FRECUENCIA_CARDIACA,
-            MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+MonitorECGContrato.ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO
+            MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+ MonitorECGContrato.ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO
     };
+
 
     //PROYECCIONES CARDIOLOGO
     public static final String[] PROYECCIONES_CARDIOLOGO = new String[]{
@@ -45,11 +42,13 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
     public static final int COLUMN_FECHA = 0;
     public static final int COLUMN_RECOMENDACIONES = 1;
     public static final int COLUMN_FRECUENCIA_CARDIACA = 2;
-    public static final int COLUMN_ID_CARDIOLOGO = 3;
+    public static final int COLUMN_REPORTE_ID_CARDIOLOGO = 3;
 
+    //PROYECCIONES DE CARDIOLOGO
     public static final int COLUMN_NOMBRE_CAR = 0;
     public static final int COLUMN_APP_CAR = 1;
     public static final int COLUMN_APM_CAR = 2;
+
 
     @Bind(R.id.txtMedico)
     TextView medico;
@@ -83,10 +82,9 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
             return  new CursorLoader(getBaseContext(),uriPrueba,PROYECCIONES_PRUEBA_DETALLE,null,null,null);
         }else if(id == CARDIOLOGO_LOADER){
             int idCar = args.getInt(BUNDLE_ID_CARDIOLOGO);
-            Uri uriCardiologo = MonitorECGContrato.CardiologoEntry.buildCardiologoId(1);
+            Uri uriCardiologo = MonitorECGContrato.CardiologoEntry.buildCardiologoId(idCar);
             return new CursorLoader(getBaseContext(),uriCardiologo,PROYECCIONES_CARDIOLOGO,null,null,null);
-        }
-        else{
+        }else{
             return  null;
         }
     }
@@ -98,12 +96,13 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
                 data.moveToFirst();
                 fechaECG.setText(data.getString(COLUMN_FECHA));
                 recomendaciones.setText(data.getString(COLUMN_RECOMENDACIONES));
-                String frecuencia = data.getInt(COLUMN_FRECUENCIA_CARDIACA)+"Ipm";
+                String frecuencia = data.getInt(COLUMN_FRECUENCIA_CARDIACA)+" Ipm";
                 frecuenciaCardiaca.setText(frecuencia);
-                int id = data.getInt(COLUMN_ID_CARDIOLOGO);
+                //obtener el reporte
+                int idCardiologo = data.getInt(COLUMN_REPORTE_ID_CARDIOLOGO);
 
                 Bundle bundle = new Bundle();
-                bundle.putInt(BUNDLE_ID_CARDIOLOGO,id);
+                bundle.putInt(BUNDLE_ID_CARDIOLOGO,idCardiologo);
                 LoaderManager loaderManager = getSupportLoaderManager();
                 loaderManager.initLoader(CARDIOLOGO_LOADER,bundle, this);
             }
