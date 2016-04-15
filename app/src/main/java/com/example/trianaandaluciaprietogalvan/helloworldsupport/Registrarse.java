@@ -29,7 +29,6 @@ import retrofit2.Response;
 
 public class Registrarse extends AppCompatActivity {
 
-
     private static final int REGISTRO_OK = 100;
 
     @Bind(R.id.txtNombre)
@@ -107,49 +106,54 @@ public class Registrarse extends AppCompatActivity {
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                     Boolean resp = response.body();
                     String text = "El correo esta registrado";
-                    //ya existe el usuario en el sistema
-                    if (resp) {
-                        Toast toast = Toast.makeText(getBaseContext(), text, duration);
-                        toast.show();
-                    } else {
-                        Bundle bundle = new Bundle();
-                        TextView nombre = (TextView) findViewById(R.id.txtNombre);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_NOMBRE, nombre.getText().toString());
-
-                        TextView app = (TextView) findViewById(R.id.txtApp);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_APP, app.getText().toString());
-
-                        TextView apm = (TextView) findViewById(R.id.txtApm);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_APM, apm.getText().toString());
-
-                        TextView curp = (TextView) findViewById(R.id.txtCurp);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_CURP, curp.getText().toString());
-
-                        TextView edad = (TextView) findViewById(R.id.txtEdad);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_EDAD, edad.getText().toString());
-
-                        RadioGroup sexo = (RadioGroup) findViewById(R.id.radioSex);
-                        int idSexo = sexo.getCheckedRadioButtonId();
-                        RadioButton sexoButton = (RadioButton) findViewById(idSexo);
-                        if (sexoButton != null) {
-                            bundle.putString(RegistrarDatosMedicos.PARAM_SEXO, sexoButton.getText().toString());
+                    if(resp != null){
+                        //ya existe el usuario en el sistema
+                        if (resp) {
+                            Toast toast = Toast.makeText(getBaseContext(), text, duration);
+                            toast.show();
                         } else {
-                            bundle.putString(RegistrarDatosMedicos.PARAM_SEXO, "");
+                            Bundle bundle = new Bundle();
+                            TextView nombre = (TextView) findViewById(R.id.txtNombre);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_NOMBRE, nombre.getText().toString());
+
+                            TextView app = (TextView) findViewById(R.id.txtApp);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_APP, app.getText().toString());
+
+                            TextView apm = (TextView) findViewById(R.id.txtApm);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_APM, apm.getText().toString());
+
+                            TextView curp = (TextView) findViewById(R.id.txtCurp);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_CURP, curp.getText().toString());
+
+                            TextView edad = (TextView) findViewById(R.id.txtEdad);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_EDAD, edad.getText().toString());
+
+                            RadioGroup sexo = (RadioGroup) findViewById(R.id.radioSex);
+                            int idSexo = sexo.getCheckedRadioButtonId();
+                            RadioButton sexoButton = (RadioButton) findViewById(idSexo);
+                            if (sexoButton != null) {
+                                bundle.putString(RegistrarDatosMedicos.PARAM_SEXO, sexoButton.getText().toString());
+                            } else {
+                                bundle.putString(RegistrarDatosMedicos.PARAM_SEXO, "");
+                            }
+
+                            TextView telefono = (TextView) findViewById(R.id.txtTelefono);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_TELEFONO, telefono.getText().toString());
+
+                            bundle.putString(RegistrarDatosMedicos.PARAM_CORREO, sCorreos);
+
+                            //contrasena
+                            TextView con = (TextView) findViewById(R.id.txtContrasena);
+                            bundle.putString(RegistrarDatosMedicos.PARAM_CONTRASENA, con.getText().toString());
+
+                            Intent intentDatosMedicos = new Intent(getBaseContext(), RegistrarDatosMedicos.class);
+                            intentDatosMedicos.putExtras(bundle);
+                            startActivityForResult(intentDatosMedicos, REGISTRO_OK);
+
                         }
-
-                        TextView telefono = (TextView) findViewById(R.id.txtTelefono);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_TELEFONO, telefono.getText().toString());
-
-                        bundle.putString(RegistrarDatosMedicos.PARAM_CORREO, sCorreos);
-
-                        //contrasena
-                        TextView con = (TextView) findViewById(R.id.txtContrasena);
-                        bundle.putString(RegistrarDatosMedicos.PARAM_CONTRASENA, con.getText().toString());
-
-                        Intent intentDatosMedicos = new Intent(getBaseContext(), RegistrarDatosMedicos.class);
-                        intentDatosMedicos.putExtras(bundle);
-                        startActivityForResult(intentDatosMedicos, REGISTRO_OK);
-
+                    }
+                    else{
+                        Toast.makeText(getBaseContext(),"Ocurrió un error en el servidor, intentalo más tarde",Toast.LENGTH_SHORT).show();
                     }
                 }
 

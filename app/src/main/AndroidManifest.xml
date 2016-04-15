@@ -6,13 +6,11 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- Permissions required by the sync adapter -->
-    <uses-permission
-        android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -54,7 +52,7 @@
             android:authorities="com.example.trianaandaluciaprietogalvan.helloworldsupport"
             android:enabled="true"
             android:exported="false"
-            android:syncable="true"/>
+            android:syncable="true" />
 
         <activity
             android:name=".Monitor"
@@ -68,13 +66,14 @@
             </intent-filter>
         </activity>
         <!-- The ContentProvider service -->
-        <service
-            android:name=".sync.MonitorECGAuthenticatorService">
+        <service android:name=".sync.MonitorECGAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
-            <meta-data android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator"/>
+
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
         </service>
         <!-- The SyncAdapter service -->
         <service
@@ -83,10 +82,18 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <activity
+            android:name=".VerDetallesPrueba"
+            android:label="@string/tittle_ver_detalles_prueba"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/ThemeDetallePrueba">
+        </activity>
     </application>
 
 </manifest>

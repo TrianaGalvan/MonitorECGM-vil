@@ -1,7 +1,9 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
 import android.accounts.Account;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,7 +14,9 @@ import android.support.v4.content.CursorLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
@@ -26,17 +30,28 @@ import java.util.List;
 
 
 public class Historial extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    //@Bind(R.id.linearNoHayPruebas)
+    //LinearLayout pruebaExistencias;
+
+    FragmentActivity activity = getActivity();
+
     public static final int PRUEBA_LOADER = 1;
 
     public static final String[] PROYECCIONES_PRUEBA = new String[]{
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+ MonitorECGContrato.PruebaEntry._ID,
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FECHA,
             MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+MonitorECGContrato.ReporteEntry.COLUMN_ESTATUS
+
     };
 
     public static final int COLUMN_ID = 0;
     public static final int COLUMN_FECHA = 1;
     public static final int COLUMN_ESTATUS = 2;
+
+    public static final String BUNDLE_FRECUENCIA_CARDIACA = "frecuenciaCardiaca";
+    public static final String BUNDLE_FECHA_ECG = "fechaECG";
+    public static final String BUNDLE_RECOMENDACIONES = "recomendaciones";
 
     HistorialAdapter adapter;
 
@@ -63,7 +78,7 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
 
         //Implementando LOADERS
         LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(PRUEBA_LOADER,null,this);
+        loaderManager.initLoader(PRUEBA_LOADER, null, this);
 
         ListView lista = null;
 
@@ -102,23 +117,22 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
         });
 
         //manejar el evento de click en un item de la lista
-        /*assert lista != null;
+        assert lista != null;
 
-        fixme  Lanzar una actividad NO un fragmento
+        //fixme  Lanzar una actividad NO un fragmento
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                //open Inten
-                VerElectrocardiograma ve = new VerElectrocardiograma();
-                FragmentActivity activity = getActivity();
-                // Insert the fragment by replacing any existing fragment
-                ft.replace(R.id.content_frame,ve);
-                ft.commit();
+                //obtener el item del adapter
+                Prueba pruebaSeleccionada = (Prueba) adapter.getItem(position);
 
-                activity.setTitle("Ver electrocardiograma");
+                Uri uriPrueba = MonitorECGContrato.PruebaEntry.buildPruebaId(pruebaSeleccionada.idPrueba);
+
+                Intent intentDetalle = new Intent(getContext(), VerDetallesPrueba.class);
+                intentDetalle.setData(uriPrueba);
+                startActivity(intentDetalle);
             }
-        });*/
+        });
     }
 
     public void obtenerPruebas(Account account){
@@ -141,6 +155,9 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        LinearLayout pruebaExistencias = (LinearLayout) getActivity().findViewById(R.id.linearNoHayPruebas);
+        pruebaExistencias.setVisibility(View.INVISIBLE);
+
         if(loader.getId() == PRUEBA_LOADER){
             if(data.getCount() != 0){
                 List<Prueba> pruebas = new ArrayList<>();
@@ -155,6 +172,8 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
                 }while (data.moveToNext());
                 //poner al adapter las pruebas que se mostraran
                 adapter.setPruebas(pruebas);
+            }else{
+                pruebaExistencias.setVisibility(View.VISIBLE);
             }
         }
         else{

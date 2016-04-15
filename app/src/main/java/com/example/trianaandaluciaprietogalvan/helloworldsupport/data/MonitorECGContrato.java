@@ -116,7 +116,7 @@ public class MonitorECGContrato {
         public static final String COLUMN_RECOMENDACIONES = "recomendaciones";
         public static final String COLUMN_ESTATUS = "estatus";
         public static final String COLUMN_OBSERVACIONES = "observaciones";
-
+        public static final String COLUMN_CARDIOLOGO_ID_CARDIOLOGO = "idCardiologo";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_AUTHORITY.buildUpon().appendPath(PATH_REPORTE).build();
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_REPORTE;

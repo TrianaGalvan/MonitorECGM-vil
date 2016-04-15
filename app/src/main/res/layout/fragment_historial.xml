@@ -13,6 +13,32 @@
             android:dividerHeight="0.5dp"
             android:background="@color/iconsText"/>
 
+        <LinearLayout
+                android:id="@+id/linearNoHayPruebas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="invisible">
+            <TextView
+                android:id="@+id/txtNoHayPruebas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aún no existen pruebas registradas"
+                android:textSize="18dp"
+                android:layout_marginTop="100dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/primary_text"/>
+
+            <ImageView
+                android:id="@+id/imgNoPruebas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/signal"
+                android:layout_marginLeft="108dp"
+                android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"

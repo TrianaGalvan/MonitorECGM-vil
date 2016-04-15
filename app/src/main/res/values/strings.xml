@@ -47,6 +47,6 @@
     <string name="title_activity_monitor">Monitor</string>
     <string name="account_type">helloworldsupport.trianaandaluciaprietogalvan.example.com</string>
     <string name="content_authority">com.example.trianaandaluciaprietogalvan.helloworldsupport</string>
-
+    <string name="tittle_ver_detalles_prueba">Detalle de la prueba</string>
 
 </resources>

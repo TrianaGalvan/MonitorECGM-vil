@@ -15,16 +15,21 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.R;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PruebaEntry;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.ReporteEntry;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Cardiologo;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.CardiologoDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -138,17 +143,47 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
     }
 
     public void insertarReporte(Reporte reporte){
+        //verificar si existe el cardiologo registrado en la llave foranea del reporte
+        //verificar si el cardiologo existe en la bd
+        Cardiologo c = new Cardiologo();
+        c.idCardiologo = reporte.idCardiologo;
+        verificarRegistroMedico(c);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(ReporteEntry.COLUMN_ESTATUS,reporte.estatus);
         contentValues.put(ReporteEntry._ID,reporte.idReporte);
         contentValues.put(ReporteEntry.COLUMN_RECOMENDACIONES,reporte.recomendaciones);
+        contentValues.put(ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO,reporte.idCardiologo);
 
         mContentResolver.insert(ReporteEntry.CONTENT_URI,contentValues);
     }
 
     public static void syncInmediatly(Context context,Account account,Bundle bundle){
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED,true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
-        ContentResolver.requestSync(account,context.getString(R.string.content_authority),bundle);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+    }
+
+    public void verificarRegistroMedico(final Cardiologo car){
+        Uri uriCardiologoId = MonitorECGContrato.CardiologoEntry.buildCardiologoId(car.idCardiologo);
+        Cursor cursor = rs.query(uriCardiologoId, CardiologoDAO.PROYECCION_VERIFICAR_CARDIOLOGO, null, null, null);
+        //verificar si el cursor tiene datos
+        int count = cursor.getCount();
+        //no existe el cardiologo regstrado en la bd
+        if(count == 0){
+            //obtener el cardiologo del servidor
+            ServicioWeb.obtenerCardiologo(car, new Callback<Cardiologo>() {
+                @Override
+                public void onResponse(Call<Cardiologo> call, Response<Cardiologo> response) {
+                    Cardiologo cardiologo = response.body();
+                    CardiologoDAO.insertarCardiologo(cardiologo, rs);
+                }
+
+                @Override
+                public void onFailure(Call<Cardiologo> call, Throwable t) {
+                    Log.e("LoginFinal", "No se obtuvó el cardiologo con el id: " + car.idCardiologo);
+                }
+            });
+        }
     }
 }

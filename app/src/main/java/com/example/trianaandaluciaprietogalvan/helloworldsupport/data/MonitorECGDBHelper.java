@@ -87,7 +87,8 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         ReporteEntry._ID + " INTEGER PRIMARY KEY, "+
                         ReporteEntry.COLUMN_OBSERVACIONES  + " TEXT, "+
                         ReporteEntry.COLUMN_RECOMENDACIONES + " TEXT, "+
-                        ReporteEntry.COLUMN_ESTATUS + " INTEGER);";
+                        ReporteEntry.COLUMN_ESTATUS + " INTEGER, "+
+                        ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO + " INTEGER );";
         db.execSQL(SQL_CREATE_REPORTE_TABLE);
 
         final String SQL_CREATE_CARDIOLOGO_TABLE =

@@ -150,13 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     MonitorECGUtils.limpiarUltimoUsuarioEnSesion(getBaseContext());
                     AccountManager am = AccountManager.get(getBaseContext());
                     am.addAccount(getString(R.string.account_type), null, null, null,MainActivity.this, null, null);
-                    //borrrar las pruebas del usuario en sesion
-                    ContentResolver rs = getContentResolver();
-                    Uri uriPrueba = MonitorECGContrato.PruebaEntry.CONTENT_URI;
-                    int rowsDeleted = rs.delete(uriPrueba,null, null);
-
-                    Uri uriReporte = MonitorECGContrato.ReporteEntry.CONTENT_URI;
-                    int rowsDeletedr = rs.delete(uriReporte,null,null);
+                    limpiarBD();
                     finish();
                     break;
                 default:
@@ -176,6 +170,19 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawer(linearLayout);
             }
         }
+    }
+
+    public void limpiarBD(){
+        //borrrar las pruebas del usuario en sesion
+        ContentResolver rs = getContentResolver();
+        Uri uriPrueba = MonitorECGContrato.PruebaEntry.CONTENT_URI;
+        int rowsDeleted = rs.delete(uriPrueba, null, null);
+
+        Uri uriReporte = MonitorECGContrato.ReporteEntry.CONTENT_URI;
+        int rowsDeletedr = rs.delete(uriReporte,null,null);
+
+        Uri uriCardiologo = MonitorECGContrato.CardiologoEntry.CONTENT_URI;
+        int rowsDeleteCar = rs.delete(uriCardiologo,null,null);
     }
 
     public void onClickEmpezarGrafica(View view){

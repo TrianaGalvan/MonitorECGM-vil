@@ -101,4 +101,9 @@ public class HistorialAdapter extends ArrayAdapter<Prueba> {
             return "";
         }
     }
+
+    @Override
+    public Prueba getItem(int position) {
+        return this.pruebas.get(position);
+    }
 }

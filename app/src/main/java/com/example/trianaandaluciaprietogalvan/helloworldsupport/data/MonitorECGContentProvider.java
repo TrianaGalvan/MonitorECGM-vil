@@ -292,7 +292,12 @@ public class MonitorECGContentProvider extends ContentProvider {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int id = PruebaEntry.getIdSettingFromUri(uri);
 
-        return db.query(PruebaEntry.TABLE_NAME,
+        String join_prueba_reporte = PruebaEntry.TABLE_NAME + " INNER JOIN "+
+                ReporteEntry.TABLE_NAME+" ON "+
+                PruebaEntry.TABLE_NAME +"."+PruebaEntry.COLUMN_REPORTE_ID_REPORTE+" = "+
+                ReporteEntry.TABLE_NAME+"."+ReporteEntry._ID;
+
+        return db.query(join_prueba_reporte,
                 projection,
                 sPruebaSettingId,
                 new String[]{Integer.toString(id)},

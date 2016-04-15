@@ -23,9 +23,9 @@ public class ServicioWeb {
             .build();
 
 
-    public static void loginPaciente(String correo, String pass, Callback<Boolean> respuesta){
+    public static void loginPaciente(String correo, String pass, Callback<Paciente> respuesta){
         PacienteService pacienteService = retrofit.create(PacienteService.class);
-        Call<Boolean> call = pacienteService.loginPaciente(correo,pass);
+        Call<Paciente> call = pacienteService.loginPaciente(correo,pass);
         call.enqueue(respuesta);
     }
 
@@ -51,5 +51,11 @@ public class ServicioWeb {
         PruebaService pruebaService = retrofit.create(PruebaService.class);
         Call<List<Prueba>> call = pruebaService.obtenerPruebas(correo);
         return call.execute();
+    }
+
+    public static void obtenerCardiologo(Cardiologo car,Callback<Cardiologo> callback) {
+        CardiologoService cardiologoService = retrofit.create(CardiologoService.class);
+        Call<Cardiologo> call = cardiologoService.obtenerCardiologo(car.idCardiologo);
+        call.enqueue(callback);
     }
 }

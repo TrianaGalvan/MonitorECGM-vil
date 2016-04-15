@@ -14,6 +14,7 @@ public class Prueba {
     public String horaEnvio;
     public Paciente paciente;
     public Reporte reporte;
+    public Integer frecuenciaCardiaca;
 
 }
 
