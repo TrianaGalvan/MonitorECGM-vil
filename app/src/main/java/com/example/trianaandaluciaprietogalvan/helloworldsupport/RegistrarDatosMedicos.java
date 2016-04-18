@@ -51,8 +51,10 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
     //obtener las vistas con la libreria Butter Knife
     @Bind(R.id.txtFrecuencia)
     EditText frecuenciaCardiaca;
-    @Bind(R.id.txtPresion)
-    EditText presionArterial;
+    @Bind(R.id.txtPresionS)
+    EditText presionSistolica;
+    @Bind(R.id.txtPresionD)
+    EditText presionDiastolica;
     @Bind(R.id.txtAltura)
     EditText altura;
     @Bind(R.id.txtPeso)
@@ -84,6 +86,7 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         sca = new SpinnerCardiologosAdapter(this);
         //asignar al spinner el adapter
         cardiologo.setAdapter(sca);
+
         //obtener medicos
         ServicioWeb.obtenerCardiologos(this);
 
@@ -111,7 +114,8 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
 
 
         String sFrecuencia = frecuenciaCardiaca.getText().toString();
-        String sPresionArterial = presionArterial.getText().toString();
+        String sPresionSistolica = presionSistolica.getText().toString();
+        String sPresionDiastolica = presionDiastolica.getText().toString();
         String sAltura = altura.getText().toString();
         String sPeso = peso.getText().toString();
         final Cardiologo car  = (Cardiologo) cardiologo.getSelectedItem();
@@ -126,11 +130,12 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         paciente.edad = bundle.getString(PARAM_EDAD).isEmpty() ? 0 : Integer.parseInt(bundle.getString(PARAM_EDAD));
         paciente.correo = bundle.getString(PARAM_CORREO);
         paciente.telefono = bundle.getString(PARAM_TELEFONO);
-
         paciente.sexo = bundle.getString(PARAM_SEXO).isEmpty() ? 'N' :bundle.getString(PARAM_SEXO).charAt(0);
         paciente.contrasena = bundle.getString(PARAM_CONTRASENA);
+
         paciente.frecuenciaRespiratoria = sFrecuencia.isEmpty() ? 0 : Integer.parseInt(sFrecuencia);
-        paciente.presionArterial = sPresionArterial.isEmpty() ? 0: Integer.parseInt(sPresionArterial);
+        paciente.presionSistolica = sPresionSistolica.isEmpty() ? 0: Integer.parseInt(sPresionSistolica);
+        paciente.presionDiastolica = sPresionDiastolica.isEmpty() ? 0: Integer.parseInt(sPresionDiastolica);
         paciente.altura = sAltura.isEmpty() ? 0 : Double.parseDouble(sAltura);
         paciente.peso = sPeso.isEmpty() ? 0 : Integer.parseInt(sPeso);
         paciente.cardiologo = car;
@@ -180,7 +185,7 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         int count = cursor.getCount();
         //no existe el cardiologo regstrado en la bd
         if(count == 0){
-            CardiologoDAO.insertarCardiologo(car,rs);
+            CardiologoDAO.insertarCardiologo(car, rs);
         }
     }
 

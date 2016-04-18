@@ -53,10 +53,17 @@
                     />
 
                 <EditText
-                    android:id="@+id/txtPresion"
+                    android:id="@+id/txtPresionS"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Presión arterial"
+                    android:hint="Presión sistólica"
+                    android:layout_marginTop="10dp"
+                    android:inputType="number"/>
+                <EditText
+                    android:id="@+id/txtPresionD"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Presión diástolica"
                     android:layout_marginTop="10dp"
                     android:inputType="number"/>
 

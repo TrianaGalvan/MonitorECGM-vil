@@ -18,13 +18,11 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.sync.MonitorECGSync;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.AccountUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 

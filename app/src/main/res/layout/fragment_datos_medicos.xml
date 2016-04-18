@@ -18,25 +18,47 @@
                     android:text="Frecuencia respiratoria: "
                     android:textSize="17dp"
                     android:textColor="@color/primary_text"/>
-                <TextView
+                <EditText
+                    android:id="@+id/txtFrecuenciaRespDM"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No registrado"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:enabled="false"
+                    android:inputType="number"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Presión arterial: "
+                    android:text="Presión sistólica: "
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
+                <EditText
+                    android:id="@+id/txtPresionSisDM"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16dp"
+                    android:enabled="false"
+                    android:inputType="number"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No registrado"
+                    android:text="Presión diastólica: "
+                    android:textSize="17dp"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/primary_text"/>
+                <EditText
+                    android:id="@+id/txtPresionDiasDM"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:enabled="false"
+                    android:inputType="number"/>
+
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -44,12 +66,15 @@
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
-                <TextView
+                <EditText
+                    android:id="@+id/txtPesoDM"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="60 Kg"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:enabled="false"
+                    android:inputType="number"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -57,12 +82,62 @@
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
+                <EditText
+                    android:id="@+id/txtAlturaDM"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="16dp"
+                    android:enabled="false"
+                    android:inputType="number"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="1.60 m"
+                    android:text="imc: "
+                    android:textSize="17dp"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/primary_text"/>
+                <EditText
+                    android:id="@+id/txtImcDM"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:editable="false"
+                    android:enabled="false"
+                    android:inputType="number"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cardiólogo: "
+                    android:textSize="17dp"
+                    android:layout_marginTop="14dp"
+                    android:textColor="@color/primary_text"/>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="20dp">
+                    <Spinner
+                        android:id="@+id/modificarCardiologo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15sp"
+                        android:spinnerMode="dropdown"
+                        android:textSize="16dp"
+                        android:visibility="invisible"></Spinner>
+
+                    <EditText
+                        android:id="@+id/txtCardiologo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:enabled="false"
+                        android:textSize="16dp" />
+
+                </FrameLayout>
             </LinearLayout>
         </ScrollView>
         <android.support.design.widget.FloatingActionButton
@@ -72,4 +147,13 @@
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
             android:src="@drawable/ic_action_editar" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_check"
+            android:layout_margin="16dp"
+            android:visibility="invisible"/>
 </FrameLayout>

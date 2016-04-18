@@ -31,7 +31,8 @@ public class MonitorECGContrato {
         public static final String COLUMN_CORREO = "correo";
         public static final String COLUMN_TELEFONO = "telefono";
         public static final String COLUMN_PESO = "peso";
-        public static final String COLUMN_PERSION_ARTERIAL = "presionArterial";
+        public static final String COLUMN_PERSION_SISTOLICA = "presionSistolica";
+        public static final String COLUMN_PERSION_DIASTOLICA = "presionDiastolica";
         public static final String COLUMN_IMC = "imc";
         public static final String COLUMN_FRECUENCIA_RESPIRATORIA = "frecuenciaRespiratoria";
         public static final String COLUMN_ALTURA = "altura";
@@ -123,7 +124,7 @@ public class MonitorECGContrato {
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_REPORTE;
 
         public static Uri buildReporteId(int id){
-            return ContentUris.withAppendedId(CONTENT_URI,id);
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
         public static int getIdSettingFromUri(Uri uri){

@@ -15,6 +15,13 @@ public class CardiologoDAO {
             MonitorECGContrato.CardiologoEntry.TABLE_NAME+"."+ MonitorECGContrato.CardiologoEntry._ID
     };
 
+    public static final String[] PROYECCION_CARDIOLOGO = new String[]{
+            MonitorECGContrato.CardiologoEntry.TABLE_NAME+"."+ MonitorECGContrato.CardiologoEntry._ID,
+            MonitorECGContrato.CardiologoEntry.TABLE_NAME+"."+ MonitorECGContrato.CardiologoEntry.COLUMN_NOMBRE,
+            MonitorECGContrato.CardiologoEntry.TABLE_NAME+"."+ MonitorECGContrato.CardiologoEntry.COLUMN_APP,
+            MonitorECGContrato.CardiologoEntry.TABLE_NAME+"."+ MonitorECGContrato.CardiologoEntry.COLUMN_APM
+    };
+
     public static void insertarCardiologo(Cardiologo car,ContentResolver rs){
         ContentValues values = new ContentValues();
         //guardar el cardiologo

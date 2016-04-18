@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServicioWeb {
     public static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://192.168.0.7:8080/")
+            .baseUrl("http://192.168.0.5:8080/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
@@ -57,5 +57,11 @@ public class ServicioWeb {
         CardiologoService cardiologoService = retrofit.create(CardiologoService.class);
         Call<Cardiologo> call = cardiologoService.obtenerCardiologo(car.idCardiologo);
         call.enqueue(callback);
+    }
+
+    public static Response<String> actualizarPaciente(Paciente paciente) throws IOException {
+        PacienteService pacienteService = retrofit.create(PacienteService.class);
+        Call<String> call = pacienteService.actualizarPaciente(paciente.idPaciente, paciente);
+        return call.execute();
     }
 }

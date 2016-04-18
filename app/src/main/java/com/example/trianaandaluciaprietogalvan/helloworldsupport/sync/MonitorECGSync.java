@@ -19,9 +19,11 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECG
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PruebaEntry;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.ReporteEntry;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Cardiologo;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Paciente;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.CardiologoDAO;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import java.io.IOException;
@@ -39,14 +41,25 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
 
     public static final String SINCRONIZACION = "sincronizacion";
     public static final int SINCRONIZACION_PRUEBA = 100;
+    public static final int SINCRONIZACION_DATOS_PERSONALES = 101;
 
     public static final String PARAM_EMAIL = "email";
-
+    public static final String PARAM_PACIENTE = "paciente";
 
     //Proyeccion para verificar si el cardiologo ya existe
     public static final String[] PROYECCION_VERIFICAR_PRUEBA = new String[]{
             PruebaEntry.TABLE_NAME+"."+ PruebaEntry._ID
     };
+
+
+
+    //SELECCION PARA VERIFICAR REGISTROS DE PACIENTE A ACTUALZIAR
+    public static final String SELECCION_UPDATE_PACIENTE = MonitorECGContrato.PacienteEntry.TABLE_NAME
+                                                            +"."+ MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR+"=1";
+
+    //SELECCION PARA REGRESAR LA BANDERA DE ACTUALIZAR  A 0
+    public static final String SELECCION_UPDATE_BANDERA = MonitorECGContrato.PacienteEntry.TABLE_NAME
+            +"."+ MonitorECGContrato.PacienteEntry._ID +"=?";
     //Columna del id del cardiologo
     public static final int COLUMN_ID_PRUEBA = 0;
 
@@ -102,11 +115,51 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
                 break;
             default:
         }
+
+        //verificar si hay registros por actualizar
+        Cursor cursor = rs.query(MonitorECGContrato.PacienteEntry.CONTENT_URI, PacienteDAO.COLUMNS_PACIENTE, SELECCION_UPDATE_PACIENTE, null, null);
+        //hay registros de pacientes pendientes para actualizar
+        if(cursor.getCount() != 0){
+            Paciente p = new Paciente();
+            cursor.moveToFirst();
+            p.idPaciente = cursor.getInt(PacienteDAO.COLUMN_ID_P);
+            p.nombre = cursor.getString(PacienteDAO.COLUMN_NOMBRE_P);
+            p.apellidoPaterno = cursor.getString(PacienteDAO.COLUMN_APP_P);
+            p.apellidoMaterno = cursor.getString(PacienteDAO.COLUMN_APM_P);
+            p.curp = cursor.getString(PacienteDAO.COLUMN_CURP_P);
+            p.edad = cursor.getInt(PacienteDAO.COLUMN_EDAD_P);
+            String sexo = cursor.getString(PacienteDAO.COLUMN_SEXO_P);
+            p.sexo = sexo.charAt(0);
+            p.correo = cursor.getString(PacienteDAO.COLUMN_CORREO_P);
+            p.telefono = cursor.getString(PacienteDAO.COLUMN_TELEFONO_P);
+            p.contrasena = cursor.getString(PacienteDAO.COLUMN_CONTRASENA_P);
+            p.frecuenciaRespiratoria = cursor.getInt(PacienteDAO.COLUMN_FRECUENCIA_P);
+            p.presionSistolica = cursor.getInt(PacienteDAO.COLUMN_PRESION_SIS_P);
+            p.presionDiastolica = cursor.getInt(PacienteDAO.COLUMN_PRESION_DIAS_P);
+            p.imc = cursor.getInt(PacienteDAO.COLUMN_IMC_P);
+            p.altura = cursor.getDouble(PacienteDAO.COLUMN_ALTURA_P);
+            p.peso = cursor.getInt(PacienteDAO.COLUMN_PESO_P);
+            p.cardiologo = new Cardiologo();
+            p.cardiologo.idCardiologo = cursor.getInt(PacienteDAO.COLUMN_CARDIOLOGO_ID_CARDIOLOGO);
+            try {
+                ServicioWeb.actualizarPaciente(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ContentValues cv = new ContentValues();
+            cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,0);
+
+            String[] args = new String[]{
+                    Integer.toString(p.idPaciente)
+            };
+
+            //regresar la bandera de actualizar a 0
+            rs.update(MonitorECGContrato.PacienteEntry.CONTENT_URI, cv, SELECCION_UPDATE_BANDERA,args);
+        }
     }
 
+
     public void insertarPruebas(List<Prueba> pruebas){
-        //obtener datos locales de las pruebas
-        //verificar que las pruebas no esten registradas en la bd
 
         for (Prueba p : pruebas){
             ContentValues contentValues = new ContentValues();

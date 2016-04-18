@@ -19,12 +19,36 @@
                     android:text="Nombre: "
                     android:textSize="17dp"
                     android:textColor="@color/primary_text"/>
+                <EditText
+                    android:inputType="textPersonName"
+                    android:id="@+id/txtNombreDP"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16dp"
+                    android:layout_marginLeft="10dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:textColor="@color/secondary_text"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Triana Andalucia Prieto Galván"
+                    android:text="Edad: "
+                    android:textSize="17dp"
+                    android:textColor="@color/primary_text"/>
+                <EditText
+                    android:inputType="number"
+                    android:id="@+id/txtEdadDP"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:textColor="@color/secondary_text"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -32,12 +56,54 @@
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
-                <TextView
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Femenino"
-                    android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:id="@+id/txtSexoDP"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:textSize="16dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"
+                        android:textColor="@color/secondary_text"/>
+
+                    <LinearLayout
+                        android:id="@+id/layoutRadios"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="invisible">
+
+                        <RadioGroup
+                            android:id="@+id/radioSex"
+                            android:layout_height="match_parent"
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/radioFemenino"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginTop="5dp"
+                                android:text="Femenino" />
+
+                            <RadioButton
+                                android:id="@+id/radioMasculino"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="9dp"
+                                android:layout_marginTop="5dp"
+                                android:text="Masculino" />
+                        </RadioGroup>
+                    </LinearLayout>
+                </FrameLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -45,12 +111,18 @@
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
-                <TextView
+                <EditText
+                    android:inputType="text"
+                    android:id="@+id/txtCurpDP"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="PIGT940502MOCRLR"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:textColor="@color/secondary_text"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -58,12 +130,18 @@
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
-                <TextView
+                <EditText
+                    android:inputType="textEmailAddress"
+                    android:id="@+id/txtCorreoDP"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="trianagalvan@gmail.com"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:textColor="@color/secondary_text"/>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -71,14 +149,20 @@
                     android:textSize="17dp"
                     android:layout_marginTop="14dp"
                     android:textColor="@color/primary_text"/>
-                <TextView
+                <EditText
+                    android:inputType="phone"
+                    android:id="@+id/txtTelefonoDP"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="55-12-97-01-16"
                     android:layout_marginLeft="10dp"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:clickable="false"
+                    android:textColor="@color/secondary_text"/>
             </LinearLayout>
         </ScrollView>
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_editar"
             android:layout_width="wrap_content"
@@ -86,4 +170,13 @@
             android:layout_gravity="bottom|end"
             android:src="@drawable/ic_action_editar"
             android:layout_margin="16dp"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_check"
+            android:layout_margin="16dp"
+            android:visibility="invisible"/>
+
 </FrameLayout>
