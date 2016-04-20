@@ -98,14 +98,16 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
 
                 // Replace whatever is in the fragment_container view with this fragment,
                 // and add the transaction to the back stack
-                Electrocardiograma ecg = new Electrocardiograma();
+                /*Electrocardiograma ecg = new Electrocardiograma();
                 transaction.replace(R.id.content_frame,ecg);
                 transaction.addToBackStack(null);
                 FragmentActivity activity = getActivity();
                 activity.setTitle("Electrocardiograma");
 
                 // Commit the transaction
-                transaction.commit();
+                transaction.commit();*/
+                Intent intent = new Intent(getContext(),Electrocardiograma.class);
+                startActivity(intent);
             }
         });
 

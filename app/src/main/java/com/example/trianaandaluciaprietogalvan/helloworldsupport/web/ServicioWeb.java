@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServicioWeb {
     public static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://192.168.0.5:8080/")
+            .baseUrl("http://monitor-ecg.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 

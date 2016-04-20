@@ -140,12 +140,15 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             p.altura = cursor.getDouble(PacienteDAO.COLUMN_ALTURA_P);
             p.peso = cursor.getInt(PacienteDAO.COLUMN_PESO_P);
             p.cardiologo = new Cardiologo();
+            p.fechamodificacion = cursor.getString(PacienteDAO.COLUMN_FECHA_MODIFICACION);
             p.cardiologo.idCardiologo = cursor.getInt(PacienteDAO.COLUMN_CARDIOLOGO_ID_CARDIOLOGO);
+
             try {
                 ServicioWeb.actualizarPaciente(p);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             ContentValues cv = new ContentValues();
             cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,0);
 

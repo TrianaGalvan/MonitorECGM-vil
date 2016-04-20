@@ -12,6 +12,6 @@ import retrofit2.http.Query;
  * Created by trianaandaluciaprietogalvan on 10/04/16.
  */
 public interface PruebaService {
-    @GET("/ultimo/prueba/correo")
+    @GET("/prueba/correo")
     Call<List<Prueba>> obtenerPruebas(@Query("email") String email);
 }

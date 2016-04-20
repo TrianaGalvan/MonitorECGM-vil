@@ -94,6 +94,23 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/ThemeDetallePrueba">
         </activity>
+        <activity
+            android:name=".Electrocardiograma"
+            android:label="@string/tittle_ecg"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/ThemeDetallePrueba">
+        </activity>
+        <activity
+            android:name=".AgregarElectrocardiografo"
+            android:label="@string/tittle_agregar_ecg"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/ThemeDetallePrueba">
+        </activity>
+
+        <service
+            android:name=".service.ServiceECG"
+            android:enabled="true"
+            />
     </application>
 
 </manifest>

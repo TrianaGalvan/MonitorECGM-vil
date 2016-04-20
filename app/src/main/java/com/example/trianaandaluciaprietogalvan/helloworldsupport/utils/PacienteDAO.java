@@ -35,6 +35,7 @@ public class PacienteDAO {
     public static final int COLUMN_PESO_P = 14;
     public static final int COLUMN_ID_P = 15;
     public static final int COLUMN_CARDIOLOGO_ID_CARDIOLOGO = 16;
+    public static final int COLUMN_FECHA_MODIFICACION = 17;
 
 
     public static String[] COLUMNS_PACIENTE = new String[]{
@@ -54,7 +55,8 @@ public class PacienteDAO {
             MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_ALTURA,
             MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_PESO,
             MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry._ID,
-            MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO
+            MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO,
+            MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_FECHA_MODIFICACION
     };
 
     public static String[] COLUMNS_PACIENTE_DATOS_PERSONALES = new String[]{
@@ -66,7 +68,8 @@ public class PacienteDAO {
             MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_SEXO,
             MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_CORREO,
             MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_TELEFONO,
-            MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry._ID
+            MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry._ID,
+            MonitorECGContrato.PacienteEntry.TABLE_NAME+"."+MonitorECGContrato.PacienteEntry.COLUMN_CONTRASENA
     };
 
     public static String[] COLUMNS_PACIENTE_DATOS_MEDICOS = new String[]{

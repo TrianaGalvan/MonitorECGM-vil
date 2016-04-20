@@ -27,6 +27,9 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.Cardiolog
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.Bind;
@@ -102,7 +105,6 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(getActivity());
     }
 
     @Override
@@ -188,7 +190,9 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
             imcCaclc = (float) (pesoImc / Math.pow(alturaImc,2));
         }
 
-        cv.put(MonitorECGContrato.PacienteEntry.COLUMN_IMC,imcCaclc);
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+        cv.put(MonitorECGContrato.PacienteEntry.COLUMN_IMC,df.format(imcCaclc));
 
         //ACTUALIZAR EL CARDIOLOGO
         final Cardiologo car  = (Cardiologo) cardiologos.getSelectedItem();
@@ -202,6 +206,12 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
         String[] args = new String[]{
                 Integer.toString(idPaciente)
         };
+
+        //ACTUALIZAR LA FECHA DE MODIFICACION
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+        cv.put(MonitorECGContrato.PacienteEntry.COLUMN_FECHA_MODIFICACION,strDate);
 
         //ACTIVAR LA BANDERA DE ACTUALIZAR
         cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,1);
@@ -326,11 +336,13 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
                 }else{
                     peso.setText(Integer.toString(pe)+" Kg");
                 }
-                int i = data.getInt(COLUMN_IMC);
+                float i = data.getFloat(COLUMN_IMC);
                 if(i == 0){
                     imc.setText("No registrado");
                 }else{
-                    imc.setText(Integer.toString(i));
+                    DecimalFormat df = new DecimalFormat();
+                    df.setMaximumFractionDigits(2);
+                    imc.setText(df.format(i));
                 }
                 float a = data.getFloat(COLUMN_ALTURA);
                 if(a == 0){
@@ -347,7 +359,7 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
                 bundle.putInt(BUNDLE_ID_CARDIOLOGO,id);
 
                 LoaderManager loaderManager = getLoaderManager();
-                android.support.v4.content.Loader<Object> loaderCar = loaderManager.getLoader(LOADER_CARDIOLOGO);
+                android.support.v4.content.Loader<Cursor> loaderCar = loaderManager.getLoader(LOADER_CARDIOLOGO);
                 if(loaderCar == null){
                     loaderManager.initLoader(LOADER_CARDIOLOGO, bundle, this);
                 }else{
@@ -381,4 +393,6 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
     public void onFailure(Call<List<Cardiologo>> call, Throwable t) {
 
     }
+
+
 }

@@ -134,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 /* Agregar electrocardiografo */
                 case 1:
-                    fragmentoReemplazar = new AgregarElectrocardiografo();
-                    titulo = "Agregar Electrocardiografo";
+                    Intent intentAgregarECG = new Intent(getBaseContext(),AgregarElectrocardiografo.class);
+                    startActivity(intentAgregarECG);
                     break;
                 /* Electrocardiograma */
                 case 2:
-                    fragmentoReemplazar = new Electrocardiograma();
-                    titulo = "Electrocardiograma";
+                    Intent intentecg = new Intent(getBaseContext(),Electrocardiograma.class);
+                    startActivity(intentecg);
                     break;
                 /* Herramientas */
                 case 3:

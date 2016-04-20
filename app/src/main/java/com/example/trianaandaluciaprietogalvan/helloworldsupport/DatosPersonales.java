@@ -41,6 +41,8 @@ public class DatosPersonales extends Fragment implements LoaderManager.LoaderCal
     EditText telefono;
     @Bind(R.id.txtEdadDP)
     EditText edadPersonales;
+    @Bind(R.id.txtContrasenaDP)
+    EditText contrasena;
     @Bind(R.id.layoutRadios)
     LinearLayout radios;
     @Bind(R.id.radioFemenino)
@@ -64,6 +66,7 @@ public class DatosPersonales extends Fragment implements LoaderManager.LoaderCal
     public static final int COLUMN_CORREO = 6;
     public static final int COLUMN_TELEFONO = 7;
     public static final int COLUMN_ID = 8;
+    public static final int COLUMN_CONTRASENA = 9;
 
     public static final int DATOS_PERSONALES_LOADER = 1;
 
@@ -162,6 +165,7 @@ public class DatosPersonales extends Fragment implements LoaderManager.LoaderCal
         };
 
         cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,1);
+        cv.put(MonitorECGContrato.PacienteEntry.COLUMN_CONTRASENA,contrasena.getText().toString());
 
         Uri.Builder builder = MonitorECGContrato.PacienteEntry.CONTENT_URI.buildUpon();
         Uri sync_update_uri = builder.appendQueryParameter(MonitorECGContentProvider.QUERY_SYNC, "true").build();
@@ -171,36 +175,22 @@ public class DatosPersonales extends Fragment implements LoaderManager.LoaderCal
     }
 
     public void setEditable(boolean visibility){
-        nombre.setFocusable(visibility);
-        nombre.setFocusableInTouchMode(visibility);
-        nombre.setClickable(visibility);
+        nombre.setEnabled(visibility);
 
-        curp.setFocusable(visibility);
-        curp.setFocusableInTouchMode(visibility);
-        curp.setClickable(visibility);
+        curp.setEnabled(visibility);
 
-        correo.setFocusable(visibility);
-        correo.setFocusableInTouchMode(visibility);
-        correo.setClickable(visibility);
+        correo.setEnabled(visibility);
 
-        telefono.setFocusable(visibility);
-        telefono.setFocusableInTouchMode(visibility);
-        telefono.setClickable(visibility);
+        telefono.setEnabled(visibility);
+
+        contrasena.setEnabled(visibility);
 
         String edadString = edadPersonales.getText().toString();
         String[] arreglo = edadString.split(" ");
         edadPersonales.setText(arreglo[0]);
-        edadPersonales.setFocusable(visibility);
-        edadPersonales.setFocusableInTouchMode(visibility);
-        edadPersonales.setClickable(visibility);
+        edadPersonales.setEnabled(visibility);
 
         if(visibility){
-            nombre.setTextColor(getResources().getColor(R.color.primary_text));
-            curp.setTextColor(getResources().getColor(R.color.primary_text));
-            correo.setTextColor(getResources().getColor(R.color.primary_text));
-            telefono.setTextColor(getResources().getColor(R.color.primary_text));
-            edadPersonales.setTextColor(getResources().getColor(R.color.primary_text));
-
             sexo.setVisibility(View.INVISIBLE);
 
             String sexoString = sexo.getText().toString();
@@ -266,6 +256,7 @@ public class DatosPersonales extends Fragment implements LoaderManager.LoaderCal
                 }else{
                     telefono.setText(telefonoString);
                 }
+                contrasena.setText(data.getString(COLUMN_CONTRASENA));
             }
         }
     }

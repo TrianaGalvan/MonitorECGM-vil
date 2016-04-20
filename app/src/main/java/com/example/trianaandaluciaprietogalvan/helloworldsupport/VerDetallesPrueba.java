@@ -1,5 +1,6 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.TextView;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
@@ -120,5 +122,10 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
     @Override
     public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
 
+    }
+
+    public void onClickVerElectrocardiograma(View view) {
+        Intent intent = new Intent(this,Grafica.class);
+        startActivity(intent);
     }
 }

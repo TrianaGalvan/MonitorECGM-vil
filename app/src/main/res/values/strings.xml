@@ -48,5 +48,8 @@
     <string name="account_type">helloworldsupport.trianaandaluciaprietogalvan.example.com</string>
     <string name="content_authority">com.example.trianaandaluciaprietogalvan.helloworldsupport</string>
     <string name="tittle_ver_detalles_prueba">Detalle de la prueba</string>
+    <string name="tittle_historial">Historial</string>
+    <string name="tittle_ecg">Electrocardiograma</string>
+    <string name="tittle_agregar_ecg">Agregar electrocardiógrafo</string>
 
 </resources>
