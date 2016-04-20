@@ -22,6 +22,9 @@ public class MonitorECGContentProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MonitorECGDBHelper mOpenHelper;
 
+    //QUERY PARAMETERS
+    public static final String QUERY_SYNC = "sync";
+
     static final int PACIENTE_WITH_ID = 100;
     static final int PACIENTE = 101;
     static final int CARDIOLOGO = 200;
@@ -292,7 +295,12 @@ public class MonitorECGContentProvider extends ContentProvider {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int id = PruebaEntry.getIdSettingFromUri(uri);
 
-        return db.query(PruebaEntry.TABLE_NAME,
+        String join_prueba_reporte = PruebaEntry.TABLE_NAME + " INNER JOIN "+
+                ReporteEntry.TABLE_NAME+" ON "+
+                PruebaEntry.TABLE_NAME +"."+PruebaEntry.COLUMN_REPORTE_ID_REPORTE+" = "+
+                ReporteEntry.TABLE_NAME+"."+ReporteEntry._ID;
+
+        return db.query(join_prueba_reporte,
                 projection,
                 sPruebaSettingId,
                 new String[]{Integer.toString(id)},
@@ -381,7 +389,14 @@ public class MonitorECGContentProvider extends ContentProvider {
         }
 
         if(rowsUpdated != 0) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            String sync = uri.getQueryParameter(QUERY_SYNC);
+
+            if(sync != null && sync.equals("true")){
+                getContext().getContentResolver().notifyChange(uri, null, true);
+            }else{
+                getContext().getContentResolver().notifyChange(uri, null, false);
+            }
+
         }
 
         return rowsUpdated;

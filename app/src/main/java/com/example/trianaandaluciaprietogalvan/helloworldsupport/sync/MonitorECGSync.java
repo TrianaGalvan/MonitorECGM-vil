@@ -15,16 +15,23 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.R;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PruebaEntry;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.ReporteEntry;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Cardiologo;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Paciente;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.CardiologoDAO;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -34,14 +41,25 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
 
     public static final String SINCRONIZACION = "sincronizacion";
     public static final int SINCRONIZACION_PRUEBA = 100;
+    public static final int SINCRONIZACION_DATOS_PERSONALES = 101;
 
     public static final String PARAM_EMAIL = "email";
-
+    public static final String PARAM_PACIENTE = "paciente";
 
     //Proyeccion para verificar si el cardiologo ya existe
     public static final String[] PROYECCION_VERIFICAR_PRUEBA = new String[]{
             PruebaEntry.TABLE_NAME+"."+ PruebaEntry._ID
     };
+
+
+
+    //SELECCION PARA VERIFICAR REGISTROS DE PACIENTE A ACTUALZIAR
+    public static final String SELECCION_UPDATE_PACIENTE = MonitorECGContrato.PacienteEntry.TABLE_NAME
+                                                            +"."+ MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR+"=1";
+
+    //SELECCION PARA REGRESAR LA BANDERA DE ACTUALIZAR  A 0
+    public static final String SELECCION_UPDATE_BANDERA = MonitorECGContrato.PacienteEntry.TABLE_NAME
+            +"."+ MonitorECGContrato.PacienteEntry._ID +"=?";
     //Columna del id del cardiologo
     public static final int COLUMN_ID_PRUEBA = 0;
 
@@ -97,12 +115,54 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
                 break;
             default:
         }
+
+        //verificar si hay registros por actualizar
+        Cursor cursor = rs.query(MonitorECGContrato.PacienteEntry.CONTENT_URI, PacienteDAO.COLUMNS_PACIENTE, SELECCION_UPDATE_PACIENTE, null, null);
+        //hay registros de pacientes pendientes para actualizar
+        if(cursor.getCount() != 0){
+            Paciente p = new Paciente();
+            cursor.moveToFirst();
+            p.idPaciente = cursor.getInt(PacienteDAO.COLUMN_ID_P);
+            p.nombre = cursor.getString(PacienteDAO.COLUMN_NOMBRE_P);
+            p.apellidoPaterno = cursor.getString(PacienteDAO.COLUMN_APP_P);
+            p.apellidoMaterno = cursor.getString(PacienteDAO.COLUMN_APM_P);
+            p.curp = cursor.getString(PacienteDAO.COLUMN_CURP_P);
+            p.edad = cursor.getInt(PacienteDAO.COLUMN_EDAD_P);
+            String sexo = cursor.getString(PacienteDAO.COLUMN_SEXO_P);
+            p.sexo = sexo.charAt(0);
+            p.correo = cursor.getString(PacienteDAO.COLUMN_CORREO_P);
+            p.telefono = cursor.getString(PacienteDAO.COLUMN_TELEFONO_P);
+            p.contrasena = cursor.getString(PacienteDAO.COLUMN_CONTRASENA_P);
+            p.frecuenciaRespiratoria = cursor.getInt(PacienteDAO.COLUMN_FRECUENCIA_P);
+            p.presionSistolica = cursor.getInt(PacienteDAO.COLUMN_PRESION_SIS_P);
+            p.presionDiastolica = cursor.getInt(PacienteDAO.COLUMN_PRESION_DIAS_P);
+            p.imc = cursor.getInt(PacienteDAO.COLUMN_IMC_P);
+            p.altura = cursor.getDouble(PacienteDAO.COLUMN_ALTURA_P);
+            p.peso = cursor.getInt(PacienteDAO.COLUMN_PESO_P);
+            p.cardiologo = new Cardiologo();
+            p.fechamodificacion = cursor.getString(PacienteDAO.COLUMN_FECHA_MODIFICACION);
+            p.cardiologo.idCardiologo = cursor.getInt(PacienteDAO.COLUMN_CARDIOLOGO_ID_CARDIOLOGO);
+
+            try {
+                ServicioWeb.actualizarPaciente(p);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            ContentValues cv = new ContentValues();
+            cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,0);
+
+            String[] args = new String[]{
+                    Integer.toString(p.idPaciente)
+            };
+
+            //regresar la bandera de actualizar a 0
+            rs.update(MonitorECGContrato.PacienteEntry.CONTENT_URI, cv, SELECCION_UPDATE_BANDERA,args);
+        }
     }
 
+
     public void insertarPruebas(List<Prueba> pruebas){
-        //obtener datos locales de las pruebas
-        //fixme Verificar que los datos que estoy intertando NO esten previamente registrados en la bd local
-        //verificar que las pruebas no esten registradas en la bd
 
         for (Prueba p : pruebas){
             ContentValues contentValues = new ContentValues();
@@ -113,6 +173,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             contentValues.put(PruebaEntry.COLUMN_HORA_ENVIO,p.horaEnvio);
             contentValues.put(PruebaEntry.COLUMN_OBSERVACIONES,p.observaciones);
             contentValues.put(PruebaEntry.COLUMN_PACIENTE_ID_PACIENTE,p.paciente.idPaciente);
+            contentValues.put(PruebaEntry.COLUMN_FRECUENCIA_CARDIACA,p.frecuenciaCardiaca);
 
             //crear el reporte
             insertarReporte(p.reporte);
@@ -138,17 +199,47 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
     }
 
     public void insertarReporte(Reporte reporte){
+        //verificar si existe el cardiologo registrado en la llave foranea del reporte
+        //verificar si el cardiologo existe en la bd
+        Cardiologo c = new Cardiologo();
+        c.idCardiologo = reporte.idCardiologo;
+        verificarRegistroMedico(c);
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(ReporteEntry.COLUMN_ESTATUS,reporte.estatus);
         contentValues.put(ReporteEntry._ID,reporte.idReporte);
         contentValues.put(ReporteEntry.COLUMN_RECOMENDACIONES,reporte.recomendaciones);
+        contentValues.put(ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO,reporte.idCardiologo);
 
         mContentResolver.insert(ReporteEntry.CONTENT_URI,contentValues);
     }
 
     public static void syncInmediatly(Context context,Account account,Bundle bundle){
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED,true);
-        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
-        ContentResolver.requestSync(account,context.getString(R.string.content_authority),bundle);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(account, context.getString(R.string.content_authority), bundle);
+    }
+
+    public void verificarRegistroMedico(final Cardiologo car){
+        Uri uriCardiologoId = MonitorECGContrato.CardiologoEntry.buildCardiologoId(car.idCardiologo);
+        Cursor cursor = rs.query(uriCardiologoId, CardiologoDAO.PROYECCION_VERIFICAR_CARDIOLOGO, null, null, null);
+        //verificar si el cursor tiene datos
+        int count = cursor.getCount();
+        //no existe el cardiologo regstrado en la bd
+        if(count == 0){
+            //obtener el cardiologo del servidor
+            ServicioWeb.obtenerCardiologo(car, new Callback<Cardiologo>() {
+                @Override
+                public void onResponse(Call<Cardiologo> call, Response<Cardiologo> response) {
+                    Cardiologo cardiologo = response.body();
+                    CardiologoDAO.insertarCardiologo(cardiologo, rs);
+                }
+
+                @Override
+                public void onFailure(Call<Cardiologo> call, Throwable t) {
+                    Log.e("LoginFinal", "No se obtuvó el cardiologo con el id: " + car.idCardiologo);
+                }
+            });
+        }
     }
 }

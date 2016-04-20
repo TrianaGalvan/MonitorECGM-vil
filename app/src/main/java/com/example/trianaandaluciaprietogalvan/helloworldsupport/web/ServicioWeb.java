@@ -18,14 +18,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServicioWeb {
     public static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://192.168.0.7:8080/")
+            .baseUrl("http://monitor-ecg.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
 
-    public static void loginPaciente(String correo, String pass, Callback<Boolean> respuesta){
+    public static void loginPaciente(String correo, String pass, Callback<Paciente> respuesta){
         PacienteService pacienteService = retrofit.create(PacienteService.class);
-        Call<Boolean> call = pacienteService.loginPaciente(correo,pass);
+        Call<Paciente> call = pacienteService.loginPaciente(correo,pass);
         call.enqueue(respuesta);
     }
 
@@ -50,6 +50,18 @@ public class ServicioWeb {
     public static Response<List<Prueba>> obtenerPruebas(String correo) throws IOException {
         PruebaService pruebaService = retrofit.create(PruebaService.class);
         Call<List<Prueba>> call = pruebaService.obtenerPruebas(correo);
+        return call.execute();
+    }
+
+    public static void obtenerCardiologo(Cardiologo car,Callback<Cardiologo> callback) {
+        CardiologoService cardiologoService = retrofit.create(CardiologoService.class);
+        Call<Cardiologo> call = cardiologoService.obtenerCardiologo(car.idCardiologo);
+        call.enqueue(callback);
+    }
+
+    public static Response<String> actualizarPaciente(Paciente paciente) throws IOException {
+        PacienteService pacienteService = retrofit.create(PacienteService.class);
+        Call<String> call = pacienteService.actualizarPaciente(paciente.idPaciente, paciente);
         return call.execute();
     }
 }

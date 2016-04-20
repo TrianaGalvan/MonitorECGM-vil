@@ -31,7 +31,8 @@ public class MonitorECGContrato {
         public static final String COLUMN_CORREO = "correo";
         public static final String COLUMN_TELEFONO = "telefono";
         public static final String COLUMN_PESO = "peso";
-        public static final String COLUMN_PERSION_ARTERIAL = "presionArterial";
+        public static final String COLUMN_PERSION_SISTOLICA = "presionSistolica";
+        public static final String COLUMN_PERSION_DIASTOLICA = "presionDiastolica";
         public static final String COLUMN_IMC = "imc";
         public static final String COLUMN_FRECUENCIA_RESPIRATORIA = "frecuenciaRespiratoria";
         public static final String COLUMN_ALTURA = "altura";
@@ -116,18 +117,20 @@ public class MonitorECGContrato {
         public static final String COLUMN_RECOMENDACIONES = "recomendaciones";
         public static final String COLUMN_ESTATUS = "estatus";
         public static final String COLUMN_OBSERVACIONES = "observaciones";
-
+        public static final String COLUMN_CARDIOLOGO_ID_CARDIOLOGO = "idCardiologo";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_AUTHORITY.buildUpon().appendPath(PATH_REPORTE).build();
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_REPORTE;
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_REPORTE;
 
         public static Uri buildReporteId(int id){
-            return ContentUris.withAppendedId(CONTENT_URI,id);
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
         public static int getIdSettingFromUri(Uri uri){
             return Integer.parseInt(uri.getPathSegments().get(1));
         }
+
+
     }
 }

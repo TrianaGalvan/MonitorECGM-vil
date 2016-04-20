@@ -5,19 +5,27 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 
 public class Perfil extends Fragment{
 
+    @Bind(R.id.viewPager)
+    ViewPager viewpager;
+    @Bind(R.id.tab_perfil)
     TabLayout tab;
+
     FragmentActivity activity;
-    ViewPager viewp;
-    Adapter adapter;
 
     public Perfil() {
         // Required empty public constructor
@@ -27,15 +35,11 @@ public class Perfil extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Insert the fragment by replacing any existing fragment
-        DatosPersonales dp = new DatosPersonales();
-        FragmentActivity acitivity = getActivity();
-        FragmentManager fragmentManager = acitivity.getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame_tabs, dp)
-                .commit();
 
-       return inflater.inflate(R.layout.fragment_perfil, container, false);
+        View view = inflater.inflate(R.layout.fragment_perfil, container, false);
+        ButterKnife.bind(this, view);
+
+       return view;
     }
 
     @Override
@@ -46,55 +50,44 @@ public class Perfil extends Fragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        activity  = getActivity();
-        tab = (TabLayout)activity.findViewById(R.id.tab_perfil);
-        tab.addTab(tab.newTab().setText("Datos personales"),true);
-        tab.addTab(tab.newTab().setText("Datos médicos"));
+        TabsAdapter adapter = new TabsAdapter(getChildFragmentManager());
 
-        tab.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                                         @Override
-                                         public void onTabSelected(TabLayout.Tab tab) {
-                                             int position = tab.getPosition();
-                                             Fragment fragmentoReemplazar = null;
-                                             String tittle = "";
-                                             switch (position) {
-                                                 case 0:
-                                                     fragmentoReemplazar = new DatosPersonales();
-                                                     tittle = "Datos personales";
-                                                     break;
-                                                 case 1:
-                                                     fragmentoReemplazar = new DatosMedicos();
-                                                     tittle = "Datos médicos";
-                                                     break;
-                                                 default:
-                                                     break;
-                                             }
+        adapter.addFragment(new DatosPersonales(),"Datos personales");
+        adapter.addFragment(new DatosMedicos(), "Datos médicos");
 
-                                             if (fragmentoReemplazar != null) {
-                                                 // Insert the fragment by replacing any existing fragment
-                                                 FragmentManager fragmentManager = getFragmentManager();
-                                                 fragmentManager.beginTransaction()
-                                                         .replace(R.id.content_frame_tabs, fragmentoReemplazar)
-                                                         .commit();
-                                             }
-                                         }
-
-                                         @Override
-                                         public void onTabUnselected(TabLayout.Tab tab) {
-
-                                         }
-
-                                         @Override
-                                         public void onTabReselected(TabLayout.Tab tab) {
-
-                                         }
-                                     }
-
-        );
-
+        viewpager.setAdapter(adapter);
+        tab.setupWithViewPager(viewpager);
 
     }
 
+    public class TabsAdapter extends FragmentPagerAdapter{
+        public static final int NUM_TABS = 2;
+        private final List<Fragment> fragmentos = new ArrayList<>(NUM_TABS);
+        private final List<String> fragmentos_titulos = new ArrayList<>(NUM_TABS);
 
+        public TabsAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentos.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentos.size();
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return fragmentos_titulos.get(position);
+        }
+
+        public void addFragment(Fragment fragmento , String tituloFragmento){
+            fragmentos.add(fragmento);
+            fragmentos_titulos.add(tituloFragmento);
+        }
+    }
 
 }

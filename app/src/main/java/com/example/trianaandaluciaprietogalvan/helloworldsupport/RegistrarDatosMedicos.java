@@ -2,7 +2,6 @@ package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,9 +14,10 @@ import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.adapters.SpinnerCardiologosAdapter;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.CardiologoEntry;
-import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PacienteEntry;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Cardiologo;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Paciente;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.CardiologoDAO;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import java.text.SimpleDateFormat;
@@ -51,8 +51,10 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
     //obtener las vistas con la libreria Butter Knife
     @Bind(R.id.txtFrecuencia)
     EditText frecuenciaCardiaca;
-    @Bind(R.id.txtPresion)
-    EditText presionArterial;
+    @Bind(R.id.txtPresionS)
+    EditText presionSistolica;
+    @Bind(R.id.txtPresionD)
+    EditText presionDiastolica;
     @Bind(R.id.txtAltura)
     EditText altura;
     @Bind(R.id.txtPeso)
@@ -84,6 +86,7 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         sca = new SpinnerCardiologosAdapter(this);
         //asignar al spinner el adapter
         cardiologo.setAdapter(sca);
+
         //obtener medicos
         ServicioWeb.obtenerCardiologos(this);
 
@@ -111,7 +114,8 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
 
 
         String sFrecuencia = frecuenciaCardiaca.getText().toString();
-        String sPresionArterial = presionArterial.getText().toString();
+        String sPresionSistolica = presionSistolica.getText().toString();
+        String sPresionDiastolica = presionDiastolica.getText().toString();
         String sAltura = altura.getText().toString();
         String sPeso = peso.getText().toString();
         final Cardiologo car  = (Cardiologo) cardiologo.getSelectedItem();
@@ -126,11 +130,12 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         paciente.edad = bundle.getString(PARAM_EDAD).isEmpty() ? 0 : Integer.parseInt(bundle.getString(PARAM_EDAD));
         paciente.correo = bundle.getString(PARAM_CORREO);
         paciente.telefono = bundle.getString(PARAM_TELEFONO);
-
         paciente.sexo = bundle.getString(PARAM_SEXO).isEmpty() ? 'N' :bundle.getString(PARAM_SEXO).charAt(0);
         paciente.contrasena = bundle.getString(PARAM_CONTRASENA);
+
         paciente.frecuenciaRespiratoria = sFrecuencia.isEmpty() ? 0 : Integer.parseInt(sFrecuencia);
-        paciente.presionArterial = sPresionArterial.isEmpty() ? 0: Integer.parseInt(sPresionArterial);
+        paciente.presionSistolica = sPresionSistolica.isEmpty() ? 0: Integer.parseInt(sPresionSistolica);
+        paciente.presionDiastolica = sPresionDiastolica.isEmpty() ? 0: Integer.parseInt(sPresionDiastolica);
         paciente.altura = sAltura.isEmpty() ? 0 : Double.parseDouble(sAltura);
         paciente.peso = sPeso.isEmpty() ? 0 : Integer.parseInt(sPeso);
         paciente.cardiologo = car;
@@ -152,9 +157,10 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
                     //insertar en la base de datos
                     //verificar si ya existe el cardiologo registrado en la bd
                     verificarRegistroMedico(car,rs);
-                    //insertarCardiologo(car, rs);
+
                     Paciente p = response.body();
-                    insertarPaciente(p,rs);
+                    PacienteDAO.insertarPaciente(p, rs);
+
                     Toast.makeText(RegistrarDatosMedicos.this, "Fuiste registrado con éxito", Toast.LENGTH_SHORT).show();
                     setResult(Activity.RESULT_OK);
                     finish();
@@ -171,16 +177,6 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         });
     }
 
-    public void insertarCardiologo(Cardiologo car,ContentResolver rs){
-        ContentValues values = new ContentValues();
-        //guardar el cardiologo
-        values.put(CardiologoEntry._ID,car.idCardiologo);
-        values.put(CardiologoEntry.COLUMN_NOMBRE,car.nombre);
-        values.put(CardiologoEntry.COLUMN_APP,car.apellidoPaterno);
-        values.put(CardiologoEntry.COLUMN_APM, car.apellidoMaterno);
-
-        rs.insert(CardiologoEntry.CONTENT_URI, values);
-    }
 
     public void verificarRegistroMedico(Cardiologo car,ContentResolver rs){
         Uri uriCardiologoId = CardiologoEntry.buildCardiologoId(car.idCardiologo);
@@ -189,32 +185,10 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         int count = cursor.getCount();
         //no existe el cardiologo regstrado en la bd
         if(count == 0){
-            insertarCardiologo(car,rs);
+            CardiologoDAO.insertarCardiologo(car, rs);
         }
     }
 
-    public void insertarPaciente(Paciente p , ContentResolver rs){
-        ContentValues values = new ContentValues();
-
-        values = new ContentValues();
-        //guardar los datos en el content provider
-        values.put(PacienteEntry.COLUMN_NOMBRE,p.nombre);
-        values.put(PacienteEntry.COLUMN_APP,p.apellidoPaterno);
-        values.put(PacienteEntry.COLUMN_APM,p.apellidoMaterno);
-        values.put(PacienteEntry.COLUMN_CURP,p.curp);
-        values.put(PacienteEntry.COLUMN_EDAD,p.edad);
-        values.put(PacienteEntry.COLUMN_CORREO,p.correo);
-        values.put(PacienteEntry.COLUMN_TELEFONO,p.telefono);
-        values.put(PacienteEntry.COLUMN_SEXO,p.sexo.toString());
-        values.put(PacienteEntry.COLUMN_CONTRASENA,p.contrasena);
-        values.put(PacienteEntry.COLUMN_FRECUENCIA_RESPIRATORIA,p.frecuenciaRespiratoria);
-        values.put(PacienteEntry.COLUMN_PERSION_ARTERIAL,p.presionArterial);
-        values.put(PacienteEntry.COLUMN_ALTURA,p.altura);
-        values.put(PacienteEntry.COLUMN_PESO,p.peso);
-        values.put(PacienteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO,p.cardiologo.idCardiologo);
-
-        Uri insert = rs.insert(PacienteEntry.CONTENT_URI, values);
-    }
 
     public String getDate(){
         Calendar c = Calendar.getInstance();

@@ -1,38 +1,37 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
-public class AgregarElectrocardiografo extends Fragment {
+
+public class AgregarElectrocardiografo extends AppCompatActivity {
     String[] electrocardiografos = null;
+
+    @Bind(R.id.lista_electrocardiogramas)
+    ListView lista;
 
     public AgregarElectrocardiografo() {
         // Required empty public constructor
     }
 
-
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_agregar_electrocardiografo, container, false);
-    }
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_agregar_electrocardiografo);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        ButterKnife.bind(this);
 
         electrocardiografos = getResources().getStringArray(R.array.electrocardiogramas);
-        FragmentActivity activity =  getActivity();
-        ListView lista = (ListView) activity.findViewById(R.id.lista_electrocardiogramas);
-        lista.setAdapter(new ArrayAdapter<String>(activity,R.layout.electrocardiograma_row,electrocardiografos));
+        lista.setAdapter(new ArrayAdapter<String>(this, R.layout.electrocardiograma_row, electrocardiografos));
     }
 }

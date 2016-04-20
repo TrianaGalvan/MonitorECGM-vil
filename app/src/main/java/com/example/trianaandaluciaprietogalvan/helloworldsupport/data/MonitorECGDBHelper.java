@@ -37,7 +37,8 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         PacienteEntry.COLUMN_CORREO  + " TEXT NOT NULL, "+
                         PacienteEntry.COLUMN_TELEFONO  + " TEXT, "+
                         PacienteEntry.COLUMN_PESO  + " REAL, "+
-                        PacienteEntry.COLUMN_PERSION_ARTERIAL  + " REAL, "+
+                        PacienteEntry.COLUMN_PERSION_SISTOLICA  + " INTEGER, "+
+                        PacienteEntry.COLUMN_PERSION_DIASTOLICA  + " INTEGER, "+
                         PacienteEntry.COLUMN_IMC  + " REAL, "+
                         PacienteEntry.COLUMN_FRECUENCIA_RESPIRATORIA  + " REAL, "+
                         PacienteEntry.COLUMN_ALTURA  + " REAL, " +
@@ -63,7 +64,7 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         PruebaEntry.COLUMN_HORA  + " TEXT NOT NULL, "+
                         PruebaEntry.COLUMN_MUESTRA_QRS + " TEXT, "+
                         PruebaEntry.COLUMN_MUESTRA_COMPLETA + " TEXT, "+
-                        PruebaEntry.COLUMN_FRECUENCIA_CARDIACA + " TEXT, "+
+                        PruebaEntry.COLUMN_FRECUENCIA_CARDIACA + " INTEGER, "+
                         PruebaEntry.COLUMN_OBSERVACIONES + " TEXT, "+
                         PruebaEntry.COLUMN_FECHA_ENVIO  + " TEXT, "+
                         PruebaEntry.COLUMN_HORA_ENVIO  + " TEXT, "+
@@ -87,7 +88,8 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         ReporteEntry._ID + " INTEGER PRIMARY KEY, "+
                         ReporteEntry.COLUMN_OBSERVACIONES  + " TEXT, "+
                         ReporteEntry.COLUMN_RECOMENDACIONES + " TEXT, "+
-                        ReporteEntry.COLUMN_ESTATUS + " INTEGER);";
+                        ReporteEntry.COLUMN_ESTATUS + " INTEGER, "+
+                        ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO + " INTEGER );";
         db.execSQL(SQL_CREATE_REPORTE_TABLE);
 
         final String SQL_CREATE_CARDIOLOGO_TABLE =

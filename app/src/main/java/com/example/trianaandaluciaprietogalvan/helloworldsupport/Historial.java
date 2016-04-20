@@ -1,7 +1,9 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
 import android.accounts.Account;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,20 +14,26 @@ import android.support.v4.content.CursorLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.sync.MonitorECGSync;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.AccountUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Historial extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    //@Bind(R.id.linearNoHayPruebas)
+    //LinearLayout pruebaExistencias;
+
+    FragmentActivity activity = getActivity();
+
     public static final int PRUEBA_LOADER = 1;
 
     public static final String[] PROYECCIONES_PRUEBA = new String[]{
@@ -63,7 +71,7 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
 
         //Implementando LOADERS
         LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(PRUEBA_LOADER,null,this);
+        loaderManager.initLoader(PRUEBA_LOADER, null, this);
 
         ListView lista = null;
 
@@ -90,35 +98,35 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
 
                 // Replace whatever is in the fragment_container view with this fragment,
                 // and add the transaction to the back stack
-                Electrocardiograma ecg = new Electrocardiograma();
+                /*Electrocardiograma ecg = new Electrocardiograma();
                 transaction.replace(R.id.content_frame,ecg);
                 transaction.addToBackStack(null);
                 FragmentActivity activity = getActivity();
                 activity.setTitle("Electrocardiograma");
 
                 // Commit the transaction
-                transaction.commit();
+                transaction.commit();*/
+                Intent intent = new Intent(getContext(),Electrocardiograma.class);
+                startActivity(intent);
             }
         });
 
         //manejar el evento de click en un item de la lista
-        /*assert lista != null;
+        assert lista != null;
 
-        fixme  Lanzar una actividad NO un fragmento
         lista.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                //open Inten
-                VerElectrocardiograma ve = new VerElectrocardiograma();
-                FragmentActivity activity = getActivity();
-                // Insert the fragment by replacing any existing fragment
-                ft.replace(R.id.content_frame,ve);
-                ft.commit();
+                //obtener el item del adapter
+                Prueba pruebaSeleccionada = (Prueba) adapter.getItem(position);
 
-                activity.setTitle("Ver electrocardiograma");
+                Uri uriPrueba = MonitorECGContrato.PruebaEntry.buildPruebaId(pruebaSeleccionada.idPrueba);
+
+                Intent intentDetalle = new Intent(getContext(), VerDetallesPrueba.class);
+                intentDetalle.setData(uriPrueba);
+                startActivity(intentDetalle);
             }
-        });*/
+        });
     }
 
     public void obtenerPruebas(Account account){
@@ -141,6 +149,9 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
 
     @Override
     public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
+        LinearLayout pruebaExistencias = (LinearLayout) getActivity().findViewById(R.id.linearNoHayPruebas);
+        pruebaExistencias.setVisibility(View.INVISIBLE);
+
         if(loader.getId() == PRUEBA_LOADER){
             if(data.getCount() != 0){
                 List<Prueba> pruebas = new ArrayList<>();
@@ -155,6 +166,8 @@ public class Historial extends Fragment implements LoaderManager.LoaderCallbacks
                 }while (data.moveToNext());
                 //poner al adapter las pruebas que se mostraran
                 adapter.setPruebas(pruebas);
+            }else{
+                pruebaExistencias.setVisibility(View.VISIBLE);
             }
         }
         else{

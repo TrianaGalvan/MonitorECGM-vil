@@ -1,23 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/iconsText"
-    android:id="@+id/fragment_electrocardiograma"
     tools:context="com.example.trianaandaluciaprietogalvan.helloworldsupport.Historial">
-        <ListView android:id="@+id/lista_historial"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:choiceMode="singleChoice"
-            android:divider="@color/divider"
-            android:dividerHeight="0.5dp"
-            android:background="@color/iconsText"/>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
+
+    <ListView
+        android:id="@+id/lista_historial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/iconsText"
+        android:choiceMode="singleChoice"
+        android:divider="@color/divider"
+        android:dividerHeight="0.5dp" />
+
+    <LinearLayout
+        android:id="@+id/linearNoHayPruebas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="invisible">
+
+        <TextView
+            android:id="@+id/txtNoHayPruebas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_float_plus" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="100dp"
+            android:text="Aún no existen pruebas registradas"
+            android:textColor="@color/primary_text"
+            android:textSize="18dp" />
+
+        <ImageView
+            android:id="@+id/imgNoPruebas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="108dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/signal" />
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_float_plus" />
 </FrameLayout>
