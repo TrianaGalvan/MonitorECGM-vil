@@ -12,9 +12,9 @@ import retrofit2.http.Path;
  * Created by trianaandaluciaprietogalvan on 09/04/16.
  */
 public interface CardiologoService {
-    @GET("/cardiologos")
+    @GET("/ultimo/cardiologos")
     Call<List<Cardiologo>> obtenerCardiologos();
 
-    @GET("/cardiologo/{id}")
+    @GET("/ultimo/cardiologo/{id}")
     Call<Cardiologo> obtenerCardiologo(@Path("id")Integer idCardiologo);
 }

@@ -17,6 +17,7 @@ public class MonitorECGContrato {
     public static final String PATH_PRUEBA = "prueba";
     public static final String PATH_REPORTE = "reporte";
     public static final String PATH_CARDIOLOGO = "cardiologo";
+    public static final String PATH_DISPOSITIVO = "dispositivo";
 
 
     public static final class PacienteEntry  implements BaseColumns{
@@ -103,7 +104,7 @@ public class MonitorECGContrato {
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_PRUEBA;
 
         public static Uri buildPruebaId(int id){
-            return ContentUris.withAppendedId(CONTENT_URI,id);
+            return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
         public static int getIdSettingFromUri(Uri uri){
@@ -130,7 +131,23 @@ public class MonitorECGContrato {
         public static int getIdSettingFromUri(Uri uri){
             return Integer.parseInt(uri.getPathSegments().get(1));
         }
+    }
 
+    public static final class DispositivoEntry{
+        public static final String TABLE_NAME = "dispositivo";
 
+        public static final String COLUMN_NOMBRE = "nombre";
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_AUTHORITY.buildUpon().appendPath(PATH_DISPOSITIVO).build();
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_DISPOSITIVO;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_DISPOSITIVO;
+
+        public static Uri buildDispositivoId(int id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static int getIdSettingFromUri(Uri uri){
+            return Integer.parseInt(uri.getPathSegments().get(1));
+        }
     }
 }

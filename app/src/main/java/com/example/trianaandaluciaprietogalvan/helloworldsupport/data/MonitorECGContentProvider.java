@@ -7,9 +7,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.*;
 import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.CONTENT_AUTHORITY;
 import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.CardiologoEntry;
 import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_CARDIOLOGO;
+import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_DISPOSITIVO;
 import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_PACIENTE;
 import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_PRUEBA;
 import static com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato.PATH_REPORTE;
@@ -33,7 +35,7 @@ public class MonitorECGContentProvider extends ContentProvider {
     static final int PRUEBA_WITH_ID =301;
     static final int REPORTE = 400;
     static final int REPORTE_WITH_ID = 401;
-
+    static final int DISPOSITIVO = 500;
 
     //paciente.idPaciente= ?
     private static final String sPacienteSettingId =
@@ -69,6 +71,7 @@ public class MonitorECGContentProvider extends ContentProvider {
         uriMatcher.addURI(CONTENT_AUTHORITY, PATH_PRUEBA + "/#",PRUEBA_WITH_ID);
         uriMatcher.addURI(CONTENT_AUTHORITY, PATH_REPORTE,REPORTE);
         uriMatcher.addURI(CONTENT_AUTHORITY, PATH_REPORTE + "/#",REPORTE_WITH_ID);
+        uriMatcher.addURI(CONTENT_AUTHORITY, PATH_DISPOSITIVO,DISPOSITIVO);
         return uriMatcher;
     }
 
@@ -98,6 +101,9 @@ public class MonitorECGContentProvider extends ContentProvider {
             case REPORTE:
                 rowsDeleted = db.delete(ReporteEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case DISPOSITIVO:
+                rowsDeleted = db.delete(DispositivoEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -126,6 +132,8 @@ public class MonitorECGContentProvider extends ContentProvider {
                 return CardiologoEntry.CONTENT_TYPE;
             case PRUEBA:
                 return PruebaEntry.CONTENT_TYPE;
+            case DISPOSITIVO:
+                return DispositivoEntry.CONTENT_TYPE;
             case PRUEBA_WITH_ID:
                 return PruebaEntry.CONTENT_ITEM_TYPE;
             case REPORTE:
@@ -171,6 +179,15 @@ public class MonitorECGContentProvider extends ContentProvider {
                 break;
             }
 
+            case DISPOSITIVO: {
+                long _id = db.insert(DispositivoEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = DispositivoEntry.buildDispositivoId((int) _id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+
             case REPORTE:
                 long _id = db.insert(ReporteEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
@@ -200,6 +217,11 @@ public class MonitorECGContentProvider extends ContentProvider {
             case PACIENTE_WITH_ID:
             {
                 retCursor = getPacienteById(uri, projection, sortOrder);
+                break;
+            }
+            case DISPOSITIVO:
+            {
+                retCursor = getDispositivo(projection, selection, selectionArgs, sortOrder);
                 break;
             }
             // "paciente"
@@ -341,6 +363,18 @@ public class MonitorECGContentProvider extends ContentProvider {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         return db.query(PacienteEntry.TABLE_NAME,
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder);
+    }
+
+    private Cursor getDispositivo(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        return db.query(DispositivoEntry.TABLE_NAME,
                 projection,
                 selection,
                 selectionArgs,

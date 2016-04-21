@@ -38,15 +38,17 @@
                 android:layout_marginTop="2dp"
                 android:id="@+id/button"
                 android:textStyle="bold"
+                android:onClick="stopService"
                 android:layout_marginLeft="280dp"
                 android:background="@color/colorAccent"
                 android:textColor="@color/iconsText" />
         </LinearLayout>
-        <ImageView
+
+        <com.github.mikephil.charting.charts.LineChart
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/grafica"
-            />
+            android:id="@+id/senal_cardiaca">
+        </com.github.mikephil.charting.charts.LineChart>
 
     </LinearLayout>
 
