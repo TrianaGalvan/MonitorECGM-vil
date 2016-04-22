@@ -143,21 +143,28 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             p.fechamodificacion = cursor.getString(PacienteDAO.COLUMN_FECHA_MODIFICACION);
             p.cardiologo.idCardiologo = cursor.getInt(PacienteDAO.COLUMN_CARDIOLOGO_ID_CARDIOLOGO);
 
+            String actualizarBandera;
             try {
-                ServicioWeb.actualizarPaciente(p);
+                Response<String> resp = ServicioWeb.actualizarPaciente(p);
+                if(resp.isSuccessful()){
+                    actualizarBandera = resp.body();
+                    if(actualizarBandera.equals("ok")){
+                        ContentValues cv = new ContentValues();
+                        cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,0);
+
+                        String[] args = new String[]{
+                                Integer.toString(p.idPaciente)
+                        };
+
+                        //regresar la bandera de actualizar a 0
+                        rs.update(MonitorECGContrato.PacienteEntry.CONTENT_URI, cv, SELECCION_UPDATE_BANDERA,args);
+                    }else{
+                        Log.e("MonitorECGSync","Error al actualizar los datos con el servidor");
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            ContentValues cv = new ContentValues();
-            cv.put(MonitorECGContrato.PacienteEntry.BANDERA_ACTUALIZAR,0);
-
-            String[] args = new String[]{
-                    Integer.toString(p.idPaciente)
-            };
-
-            //regresar la bandera de actualizar a 0
-            rs.update(MonitorECGContrato.PacienteEntry.CONTENT_URI, cv, SELECCION_UPDATE_BANDERA,args);
         }
     }
 
@@ -178,7 +185,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             //crear el reporte
             insertarReporte(p.reporte);
 
-            contentValues.put(PruebaEntry.COLUMN_REPORTE_ID_REPORTE,p.reporte.idReporte);
+            contentValues.put(PruebaEntry.COLUMN_REPORTE_ID_REPORTE, p.reporte.idReporte);
 
             mContentResolver.insert(PruebaEntry.CONTENT_URI,contentValues);
         }
@@ -189,11 +196,14 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
         for (Prueba prueba : pruebas){
             Uri uriPruebaId = PruebaEntry.buildPruebaId(prueba.idPrueba);
             Cursor cursor = rs.query(uriPruebaId, PROYECCION_VERIFICAR_PRUEBA, null, null, null);
-            //verificar si el cursor tiene datos
-            int count = cursor.getCount();
-            //no existe el cardiologo regstrado en la bd
-            if(count == 0)
-                listaNuevasPruebas.add(prueba);
+            if(cursor != null){
+                //verificar si el cursor tiene datos
+                int count = cursor.getCount();
+                cursor.close();
+                //no existe el cardiologo regstrado en la bd
+                if(count == 0)
+                    listaNuevasPruebas.add(prueba);
+            }
         }
         return listaNuevasPruebas;
     }

@@ -183,6 +183,9 @@ public class MainActivity extends AppCompatActivity {
 
         Uri uriCardiologo = MonitorECGContrato.CardiologoEntry.CONTENT_URI;
         int rowsDeleteCar = rs.delete(uriCardiologo,null,null);
+
+        Uri uriPaciente = MonitorECGContrato.PacienteEntry.CONTENT_URI;
+        int rowsPacienteCar = rs.delete(uriPaciente,null,null);
     }
 
     public void onClickEmpezarGrafica(View view){

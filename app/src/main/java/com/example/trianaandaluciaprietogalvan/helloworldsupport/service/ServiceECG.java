@@ -191,6 +191,7 @@ public class ServiceECG extends Service {
                                 aux1 = aux1 << 6;
                                 aux1 = aux1 | aux2;
                             }
+
                             Thread.sleep(33);
                             publishProgress(aux1);
                         }
@@ -216,12 +217,13 @@ public class ServiceECG extends Service {
 
         @Override
         protected void onCancelled(Void aVoid) {
-            try {
+            //USAR PARA EL BLUETHOOT
+            /*try {
                 os.write(0);
                 indiceInicio = 0;
             } catch (IOException ioe) {
                 Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
-            }
+            }*/
         }
     }
 
