@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +30,10 @@ public class AgregarElectrocardiografo extends AppCompatActivity {
 
     ECGSAdapter ecgsAdapter;
 
+    String[] PROYECCION_DISP = new String[]{
+            MonitorECGContrato.DispositivoEntry.COLUMN_NOMBRE
+    };
+
     @Bind(R.id.lista_electrocardiogramas)
     ListView lista;
 
@@ -51,7 +56,6 @@ public class AgregarElectrocardiografo extends AppCompatActivity {
         ArrayList<String> nombresispositivos = enlazar();
         if(nombresispositivos != null){
             nombresispositivos.add("Dispositivo 1");
-            nombresispositivos.add("Dispositivo 2");
             //colocar el adapter
             ecgsAdapter.setDispositivos(nombresispositivos);
             lista.setAdapter(ecgsAdapter);
@@ -64,10 +68,26 @@ public class AgregarElectrocardiografo extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String dispositivo = ecgsAdapter.getItem(position);
                 //guardar la direccion del dispositivo en la bd
+                //verficar que no hayan registros de dispositivos
                 ContentResolver rs = getContentResolver();
-                ContentValues cv = new ContentValues();
-                cv.put(MonitorECGContrato.DispositivoEntry.COLUMN_NOMBRE,dispositivo);
-                rs.insert(MonitorECGContrato.DispositivoEntry.CONTENT_URI, cv);
+                Cursor c = null;
+                try{
+                    c = rs.query(MonitorECGContrato.DispositivoEntry.CONTENT_URI, PROYECCION_DISP, null, null, null);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                if(c != null){
+                    if(c.getCount() != 0){
+                        //elimianr los registros
+                        int rowsdelete = rs.delete(MonitorECGContrato.DispositivoEntry.CONTENT_URI,null,null);
+                    }else{
+                        ContentValues cv = new ContentValues();
+                        cv.put(MonitorECGContrato.DispositivoEntry.COLUMN_NOMBRE,dispositivo);
+                        rs.insert(MonitorECGContrato.DispositivoEntry.CONTENT_URI, cv);
+                        Toast.makeText(getBaseContext(),"Se guardo el nombre del ECG",Toast.LENGTH_SHORT).show();
+                    }
+                }
+
             }
         });
     }

@@ -13,11 +13,12 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
-import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -66,13 +67,13 @@ public class ServiceECG extends Service {
         //iniciar la conexion con el bluethoot
 
         //DESCOMENTAR PARA PROBAR CON BLUETOOTH
-        /*conexion = (ConexionBT) new ConexionBT().execute();
+        conexion = (ConexionBT) new ConexionBT().execute();
         //esperar a que se inicie la conexion con el bluethoot
         while (true) {
             if (estadoConexion) {
                 break;
             }
-        }*/
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
@@ -106,18 +107,18 @@ public class ServiceECG extends Service {
         @Override
         protected void onPreExecute() {
             //DESCOMENTAR PARA USAR BLUETOOTH
-            /*
             try {
                 is = btSocket.getInputStream();
                 os = btSocket.getOutputStream();
             } catch (IOException ioe) {
-                Toast.makeText(ServiceECG.this, "Error al obtener los streams", Toast.LENGTH_LONG).show();
-            }*/
+                ioe.printStackTrace();
+                //Toast.makeText(ServiceECG.this, "Error al obtener los streams", Toast.LENGTH_LONG).show();
+            }
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            leerArchivo();
+            leerBluetooth();
             return null;
         }
 
@@ -127,7 +128,8 @@ public class ServiceECG extends Service {
             try {
                 os.write(1);
             } catch (IOException e) {
-                Toast.makeText(ServiceECG.this, "No se envio el comando 1", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+                //Toast.makeText(ServiceECG.this, "No se envio el comando 1", Toast.LENGTH_LONG).show();
             }
             while (true) {
                 if (isCancelled())
@@ -151,8 +153,12 @@ public class ServiceECG extends Service {
                         aux1 = aux1 << 6;
                         aux1 = aux1 | aux2;
                     }
+                    Thread.sleep(5);
+                    publishProgress(aux1);
                 } catch (IOException e) {
                     break;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -191,8 +197,7 @@ public class ServiceECG extends Service {
                                 aux1 = aux1 << 6;
                                 aux1 = aux1 | aux2;
                             }
-
-                            Thread.sleep(33);
+                            Thread.sleep(6);
                             publishProgress(aux1);
                         }
                     }
@@ -210,22 +215,25 @@ public class ServiceECG extends Service {
         @Override
         protected void onProgressUpdate(Integer... values) {
             int val = values[0];
-            Intent intent = new Intent("ECG");
+            EventBus.getDefault().post(new GraficarValorEvent(val));
+            /*Intent intent = new Intent("ECG");
             intent.putExtra("val",val);
-            LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);*/
         }
 
         @Override
         protected void onCancelled(Void aVoid) {
             //USAR PARA EL BLUETHOOT
-            /*try {
+            try {
                 os.write(0);
                 indiceInicio = 0;
             } catch (IOException ioe) {
-                Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
-            }*/
+                ioe.printStackTrace();
+                //Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
+            }
         }
     }
+
 
 
     private class ConexionBT extends AsyncTask<Void, Void, Void> {
@@ -236,7 +244,7 @@ public class ServiceECG extends Service {
 
         @Override
         protected void onPreExecute() {
-            progreso = ProgressDialog.show(ServiceECG.this, "Connectando...", "Por favor espere...");
+            //progreso = ProgressDialog.show(ServiceECG.this, "Connectando...", "Por favor espere...");
         }
 
         @Override
@@ -257,7 +265,7 @@ public class ServiceECG extends Service {
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                         btSocket.connect();
                     } else {
-                        Toast.makeText(getBaseContext(), "El dispositivo no se encuentra enlazado con algún monitor ecg", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getBaseContext(), "El dispositivo no se encuentra enlazado con algún monitor ecg", Toast.LENGTH_LONG).show();
                     }
 
                 }
@@ -272,12 +280,12 @@ public class ServiceECG extends Service {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             if (!estadoConexion) {
-                Toast.makeText(ServiceECG.this, "Error de conexión, vuelva a intentarlo", Toast.LENGTH_LONG).show();
+               // Toast.makeText(ServiceECG.this, "Error de conexión, vuelva a intentarlo", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(ServiceECG.this, "Conexion establecida", Toast.LENGTH_LONG).show();
+                //Toast.makeText(ServiceECG.this, "Conexion establecida", Toast.LENGTH_LONG).show();
                 estadoBt = true;
             }
-            progreso.dismiss();
+            //progreso.dismiss();
         }
 
     }
