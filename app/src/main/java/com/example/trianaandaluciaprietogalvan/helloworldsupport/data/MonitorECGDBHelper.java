@@ -100,6 +100,10 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
                         CardiologoEntry.COLUMN_APM + " TEXT NOT NULL);";
         db.execSQL(SQL_CREATE_CARDIOLOGO_TABLE);
 
+        final String SQL_CREATE_DISPOSITIVO_TABLE =
+                "CREATE TABLE "+ MonitorECGContrato.DispositivoEntry.TABLE_NAME +"("+
+                        MonitorECGContrato.DispositivoEntry.COLUMN_NOMBRE + " TEXT);";
+        db.execSQL(SQL_CREATE_DISPOSITIVO_TABLE);
     }
 
     @Override

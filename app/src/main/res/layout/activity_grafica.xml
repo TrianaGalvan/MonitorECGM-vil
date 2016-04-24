@@ -23,12 +23,13 @@
                 android:layout_height="34dp"
                 android:src="@drawable/frecuencia_cardiaca"/>
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/txtFrecuencia"
+                android:layout_width="135dp"
                 android:layout_height="wrap_content"
-                android:text="67 Ipm"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="3dp"
                 android:textSize="20dp"
+                android:visibility="visible"
                 android:textStyle="bold"
                 />
             <Button
@@ -38,15 +39,17 @@
                 android:layout_marginTop="2dp"
                 android:id="@+id/button"
                 android:textStyle="bold"
-                android:layout_marginLeft="280dp"
+                android:onClick="stopService"
+                android:layout_marginLeft="290dp"
                 android:background="@color/colorAccent"
                 android:textColor="@color/iconsText" />
         </LinearLayout>
-        <ImageView
+
+        <com.github.mikephil.charting.charts.LineChart
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/grafica"
-            />
+            android:id="@+id/senal_cardiaca">
+        </com.github.mikephil.charting.charts.LineChart>
 
     </LinearLayout>
 

@@ -371,8 +371,10 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
         }
         else if(loader.getId() == LOADER_CARDIOLOGO) {
             data.moveToFirst();
-            String nombreCar = data.getString(COLUMN_NOMBRE) + " "+data.getString(COLUMN_APP)+" "+data.getString(COLUMN_APM);
-            cardiologo.setText(nombreCar);
+            if(data.getCount() != 0){
+                String nombreCar = data.getString(COLUMN_NOMBRE) + " "+data.getString(COLUMN_APP)+" "+data.getString(COLUMN_APM);
+                cardiologo.setText(nombreCar);
+            }
         }
     }
 

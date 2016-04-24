@@ -105,6 +105,7 @@ public class PacienteDAO {
         values.put(MonitorECGContrato.PacienteEntry.COLUMN_ALTURA,p.altura);
         values.put(MonitorECGContrato.PacienteEntry.COLUMN_PESO,p.peso);
         values.put(MonitorECGContrato.PacienteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO,p.cardiologo.idCardiologo);
+        values.put(MonitorECGContrato.PacienteEntry._ID,p.idPaciente);
 
         Uri insert = rs.insert(MonitorECGContrato.PacienteEntry.CONTENT_URI, values);
     }
