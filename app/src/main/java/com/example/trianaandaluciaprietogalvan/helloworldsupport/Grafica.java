@@ -1,12 +1,19 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+<<<<<<< HEAD
+import android.widget.Button;
+||||||| merged common ancestors
+=======
 import android.widget.TextView;
+>>>>>>> bluethoot
 import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
@@ -31,6 +38,11 @@ public class Grafica extends AppCompatActivity {
 
     @Bind(R.id.senal_cardiaca)
     LineChart grafica;
+<<<<<<< HEAD
+    @Bind(R.id.buttonDetener)
+    Button detener;
+    @Bind(R.id.buttonEmpezar)
+    Button empezar;
     @Bind(R.id.txtFrecuencia)
     TextView frecuencia;
 
@@ -48,7 +60,7 @@ public class Grafica extends AppCompatActivity {
         grafica.setHardwareAccelerationEnabled(true);
 
         grafica.invalidate();
-        
+
         startService();
         frecuencia.setText("hola");
     }
@@ -66,7 +78,7 @@ public class Grafica extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEventoGraficar(GraficarValorEvent event){
+    public void onEventoGraficar(GraficarValorEvent event) {
         LineData data = grafica.getData();
         int val = event.valor;
         if(data != null) {
@@ -100,7 +112,6 @@ public class Grafica extends AppCompatActivity {
         frecuencia.setText(frec+" Ipm");
     }
 
-
     // Method to start the service
     public void startService() {
         intent = new Intent(getBaseContext(), ServiceECG.class);
@@ -109,9 +120,48 @@ public class Grafica extends AppCompatActivity {
 
     // Method to stop the service
     public void stopService(View view) {
-        stopService(intent);
-        Toast.makeText(this,"Se detuvo el wervicio",Toast.LENGTH_SHORT).show();
+        showDialog();
+    }
+
+    public void showDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set title
+        alertDialogBuilder.setTitle("Salir");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("¿Estas seguro de detener el electrocardiograma?")
+                .setCancelable(false)
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        empezar.setEnabled(true);
+                        stopService(intent);
+                        Intent intent = new Intent(getBaseContext(), EnviarECG.class);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
 
+    public void startService(View view) {
+        empezar.setEnabled(false);
+        startService();
+        Toast.makeText(this, "presionado" +
+                "", Toast.LENGTH_SHORT).show();
+    }
 }
