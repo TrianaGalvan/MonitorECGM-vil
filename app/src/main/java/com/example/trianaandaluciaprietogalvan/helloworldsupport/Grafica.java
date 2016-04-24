@@ -8,12 +8,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-<<<<<<< HEAD
+
 import android.widget.Button;
-||||||| merged common ancestors
-=======
 import android.widget.TextView;
->>>>>>> bluethoot
 import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
@@ -38,7 +35,6 @@ public class Grafica extends AppCompatActivity {
 
     @Bind(R.id.senal_cardiaca)
     LineChart grafica;
-<<<<<<< HEAD
     @Bind(R.id.buttonDetener)
     Button detener;
     @Bind(R.id.buttonEmpezar)
@@ -109,7 +105,7 @@ public class Grafica extends AppCompatActivity {
     public void onColocarFrecuencia(ColocarFrecuenciaEvent event){
         float f = event.frecuencia;
         String frec = String.format("%.2f",f);
-        frecuencia.setText(frec+" Ipm");
+        frecuencia.setText(frec + " Ipm");
     }
 
     // Method to start the service
@@ -152,7 +148,6 @@ public class Grafica extends AppCompatActivity {
 
         // create alert dialog
         AlertDialog alertDialog = alertDialogBuilder.create();
-
         // show it
         alertDialog.show();
     }

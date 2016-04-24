@@ -164,7 +164,7 @@ public class ServiceECG extends Service {
                         Thread.sleep(5);
                         float frecuencia = (256.0f / (float)aux1) * 70.0f;
                         EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
-                    }else
+                    }   else
                     {
                         if(aux1 == 0)
                         {
