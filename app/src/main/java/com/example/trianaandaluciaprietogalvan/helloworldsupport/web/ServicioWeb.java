@@ -7,6 +7,7 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba
 import java.io.IOException;
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,7 +26,7 @@ public class ServicioWeb {
 
     public static void loginPaciente(String correo, String pass, Callback<Paciente> respuesta){
         PacienteService pacienteService = retrofit.create(PacienteService.class);
-        Call<Paciente> call = pacienteService.loginPaciente(correo,pass);
+        Call<Paciente> call = pacienteService.loginPaciente(correo, pass);
         call.enqueue(respuesta);
     }
 
@@ -62,6 +63,13 @@ public class ServicioWeb {
     public static Response<String> actualizarPaciente(Paciente paciente) throws IOException {
         PacienteService pacienteService = retrofit.create(PacienteService.class);
         Call<String> call = pacienteService.actualizarPaciente(paciente.idPaciente, paciente);
+        return call.execute();
+    }
+
+
+    public static Response<Prueba> crearPrueba(MultipartBody.Part prueba) throws IOException {
+        PruebaService pruebaService = retrofit.create(PruebaService.class);
+        Call<Prueba> call = pruebaService.generarPrueba(prueba);
         return call.execute();
     }
 }

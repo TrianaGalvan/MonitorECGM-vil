@@ -26,10 +26,14 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.Cardiolog
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,7 +45,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
 
     public static final String SINCRONIZACION = "sincronizacion";
     public static final int SINCRONIZACION_PRUEBA = 100;
-    public static final int SINCRONIZACION_DATOS_PERSONALES = 101;
+    public static final int SINCRONIZACION_ELECTROCARDIOGRAMA = 200;
 
     public static final String PARAM_EMAIL = "email";
     public static final String PARAM_PACIENTE = "paciente";
@@ -50,6 +54,8 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
     public static final String[] PROYECCION_VERIFICAR_PRUEBA = new String[]{
             PruebaEntry.TABLE_NAME+"."+ PruebaEntry._ID
     };
+
+    public static final String CAMPO_NOM_ARCHIVO  = "nom_prueba_ecg";
 
 
 
@@ -62,6 +68,7 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             +"."+ MonitorECGContrato.PacienteEntry._ID +"=?";
     //Columna del id del cardiologo
     public static final int COLUMN_ID_PRUEBA = 0;
+
 
     //Content resolver
     ContentResolver rs = getContext().getContentResolver();
@@ -112,6 +119,9 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                break;
+            case SINCRONIZACION_ELECTROCARDIOGRAMA:
+                enviarArchivo("");
                 break;
             default:
         }
@@ -165,6 +175,27 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public MultipartBody.Part buildMulripartFromFile(String fieldName, String filePath) {
+        MultipartBody.Part archivo = null;
+        if(filePath != null) {
+            File file = new File(filePath);
+            RequestBody filePart = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+
+            archivo = MultipartBody.Part.createFormData("filePrueba",file.getName(), filePart);
+        }
+        return archivo;
+    }
+
+
+    private  void enviarArchivo(String filePath) {
+        MultipartBody.Part prueba = buildMulripartFromFile(CAMPO_NOM_ARCHIVO, filePath);
+        try {
+            Response<Prueba> p  = ServicioWeb.crearPrueba(prueba);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

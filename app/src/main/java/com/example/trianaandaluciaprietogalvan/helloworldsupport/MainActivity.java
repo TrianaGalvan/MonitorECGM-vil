@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 /* Electrocardiograma */
                 case 2:
-                    Intent intentecg = new Intent(getBaseContext(),Electrocardiograma.class);
+                    Intent intentecg = new Intent(getBaseContext(),Grafica.class);
                     startActivity(intentecg);
                     break;
                 /* Herramientas */
@@ -186,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
 
         Uri uriPaciente = MonitorECGContrato.PacienteEntry.CONTENT_URI;
         int rowsPacienteCar = rs.delete(uriPaciente,null,null);
+
+        Uri uriDispositivo = MonitorECGContrato.DispositivoEntry.CONTENT_URI;
+        int rowsDeleteDisp = rs.delete(uriDispositivo,null,null);
     }
 
     public void onClickEmpezarGrafica(View view){

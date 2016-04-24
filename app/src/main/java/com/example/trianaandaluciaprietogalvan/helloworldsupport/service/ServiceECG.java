@@ -69,13 +69,13 @@ public class ServiceECG extends Service {
         //iniciar la conexion con el bluethoot
 
         //DESCOMENTAR PARA PROBAR CON BLUETOOTH
-        conexion = (ConexionBT) new ConexionBT().execute();
+        /*conexion = (ConexionBT) new ConexionBT().execute();
         //esperar a que se inicie la conexion con el bluethoot
         while (true) {
             if (estadoConexion) {
                 break;
             }
-        }
+        }*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
@@ -120,7 +120,7 @@ public class ServiceECG extends Service {
 
         @Override
         protected Void doInBackground(Void... params) {
-            leerBluetooth();
+            leerArchivo();
             return null;
         }
 
@@ -281,13 +281,13 @@ public class ServiceECG extends Service {
         @Override
         protected void onCancelled(Void aVoid) {
             //USAR PARA EL BLUETHOOT
-            try {
+           /* try {
                 os.write(0);
                 indiceInicio = 0;
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 //Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
-            }
+            }*/
         }
     }
 

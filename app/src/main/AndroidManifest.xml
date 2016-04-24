@@ -11,6 +11,10 @@
     <!-- Permissions required by the sync adapter -->
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -92,29 +96,27 @@
             android:name=".VerDetallesPrueba"
             android:label="@string/tittle_ver_detalles_prueba"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/ThemeDetallePrueba">
-        </activity>
+            android:theme="@style/ThemeDetallePrueba"></activity>
         <activity
             android:name=".Electrocardiograma"
             android:label="@string/tittle_ecg"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/ThemeDetallePrueba">
-        </activity>
+            android:theme="@style/ThemeDetallePrueba"></activity>
         <activity
             android:name=".AgregarElectrocardiografo"
             android:label="@string/tittle_agregar_ecg"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/ThemeDetallePrueba">
-        </activity>
+            android:theme="@style/ThemeDetallePrueba"></activity>
 
         <service
             android:name=".service.ServiceECG"
-            android:enabled="true"
-            />
+            android:enabled="true" />
+
+        <activity android:name=".EnviarECG"
+                  android:label="Enviar electrocardiograma"
+                  android:theme="@style/ThemeDetallePrueba"
+                  android:parentActivityName=".Electrocardiograma"
+            ></activity>
     </application>
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 </manifest>
