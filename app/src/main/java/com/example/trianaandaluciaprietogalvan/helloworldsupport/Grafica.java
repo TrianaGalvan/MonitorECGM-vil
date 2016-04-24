@@ -1,11 +1,14 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
@@ -29,6 +32,10 @@ public class Grafica extends AppCompatActivity {
 
     @Bind(R.id.senal_cardiaca)
     LineChart grafica;
+    @Bind(R.id.buttonDetener)
+    Button detener;
+    @Bind(R.id.buttonEmpezar)
+    Button empezar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +53,10 @@ public class Grafica extends AppCompatActivity {
         grafica.getAxisLeft().setAxisMaxValue(5000f);
         grafica.getAxisLeft().setAxisMinValue(0f);
         grafica.getAxisLeft().setShowOnlyMinMax(false);*/
-        grafica.setScaleMinima(1.6f,1f);
+        grafica.setScaleMinima(1.6f, 1f);
         grafica.setHardwareAccelerationEnabled(true);
 
         grafica.invalidate();
-
-        /*LocalBroadcastManager.getInstance(this).registerReceiver(
-                mMessageReceiver, new IntentFilter("ECG"));*/
-        startService();
 
     }
 
@@ -70,12 +73,12 @@ public class Grafica extends AppCompatActivity {
     }
 
     @Subscribe
-    public void onEventoGraficar(GraficarValorEvent event){
+    public void onEventoGraficar(GraficarValorEvent event) {
         LineData data = grafica.getData();
 
         int val = event.numero;
 
-        if(data != null) {
+        if (data != null) {
             ILineDataSet set = data.getDataSetByIndex(0);
             if (set == null) {
                 LineDataSet setaux = new LineDataSet(null, "DataSet 1");
@@ -137,7 +140,6 @@ public class Grafica extends AppCompatActivity {
     };*/
 
 
-
     // Method to start the service
     public void startService() {
         intent = new Intent(getBaseContext(), ServiceECG.class);
@@ -146,9 +148,48 @@ public class Grafica extends AppCompatActivity {
 
     // Method to stop the service
     public void stopService(View view) {
-        stopService(intent);
-        Toast.makeText(this,"Se detuvo el wervicio",Toast.LENGTH_SHORT).show();
+        showDialog();
+    }
+
+    public void showDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set title
+        alertDialogBuilder.setTitle("Salir");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("¿Estas seguro de detener el electrocardiograma?")
+                .setCancelable(false)
+                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        empezar.setEnabled(true);
+                        stopService(intent);
+                        Intent intent = new Intent(getBaseContext(), EnviarECG.class);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
 
+    public void startService(View view) {
+        empezar.setEnabled(false);
+        startService();
+        Toast.makeText(this, "presionado" +
+                "", Toast.LENGTH_SHORT).show();
+    }
 }

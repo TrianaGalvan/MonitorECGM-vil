@@ -17,4 +17,17 @@ public class NetworkUtil {
         }
         return false;
     }
+
+    public static boolean isConnctedToMobileNet(Context context){
+        boolean net_mobile = false;
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        if(activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE){
+            net_mobile = true;
+        }
+        return net_mobile;
+    }
 }

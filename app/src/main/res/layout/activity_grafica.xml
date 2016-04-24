@@ -34,12 +34,23 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
+                android:text="@string/empezar_ecg"
+                android:layout_marginTop="2dp"
+                android:id="@+id/buttonEmpezar"
+                android:textStyle="bold"
+                android:layout_marginLeft="220dp"
+                android:onClick="startService"
+                android:background="@color/colorAccent"
+                android:textColor="@color/iconsText" />
+            <Button
+                android:layout_marginLeft="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
                 android:text="@string/detener_ecg"
                 android:layout_marginTop="2dp"
-                android:id="@+id/button"
+                android:id="@+id/buttonDetener"
                 android:textStyle="bold"
                 android:onClick="stopService"
-                android:layout_marginLeft="280dp"
                 android:background="@color/colorAccent"
                 android:textColor="@color/iconsText" />
         </LinearLayout>
