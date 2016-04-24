@@ -16,7 +16,6 @@ import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
-import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,7 +58,6 @@ public class ServiceECG extends Service {
     ConexionBT conexion;
     boolean estadoBt;
     boolean estadoConexion;
-    int tipoVal;
 
 
     int indiceInicio = 0, indiceFinal = 0;
@@ -109,7 +107,7 @@ public class ServiceECG extends Service {
         @Override
         protected void onPreExecute() {
             //DESCOMENTAR PARA USAR BLUETOOTH
-           try {
+            /*try {
                 is = btSocket.getInputStream();
                 os = btSocket.getOutputStream();
             } catch (IOException ioe) {
@@ -125,9 +123,6 @@ public class ServiceECG extends Service {
         }
 
         public void leerBluetooth(){
-
-            Integer[] valores = new Integer[2];
-            int n1, n2;
             int nBytes;
             // Read from the InputStream
             try {
@@ -140,49 +135,26 @@ public class ServiceECG extends Service {
                 if (isCancelled())
                     break;
                 try {
-                    int aux1, aux2, aux3;
+
+                    int n1, n2;
                     n1 = is.read();
                     n2 = is.read();
-
+                    int aux1, aux2;
                     aux1 = n1 & 64;
-                    aux3 = n1 & 128;
-                    if(aux3 == 128){
-                        if(aux1 == 0)
-                        {
-                            aux1 = n1 & 0x0F;
-                            aux2 = n2 & 0x0F;
-                            aux2 = aux2 << 4;
-                            aux1 = aux1 | aux2;
-                        }
-                        else
-                        {
-                            aux1 = n1 & 0x0F;
-                            aux2 = n2 & 0x0F;
-                            aux1 = aux1 << 4;
-                            aux1 = aux1 | aux2;
-                        }
-                        Thread.sleep(5);
-                        float frecuencia = (256.0f / (float)aux1) * 70.0f;
-                        EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
-                    }else
-                    {
-                        if(aux1 == 0)
-                        {
-                            aux1 = n1 & 0x3F;
-                            aux2 = n2 & 0x3F;
-                            aux2 = aux2 << 6;
-                            aux1 = aux1 | aux2;
-                        }
-                        else
-                        {
-                            aux1 = n1 & 0x3F;
-                            aux2 = n2 & 0x3F;
-                            aux1 = aux1 << 6;
-                            aux1 = aux1 | aux2;
-                        }
-                        Thread.sleep(5);
-                        publishProgress(aux1);
+                    aux2 = n2 & 64;
+                    if (aux1 == 0) {
+                        aux1 = n1 & 0x3F;
+                        aux2 = n2 & 0x3F;
+                        aux2 = aux2 << 6;
+                        aux1 = aux1 | aux2;
+                    } else {
+                        aux1 = n1 & 0x3F;
+                        aux2 = n2 & 0x3F;
+                        aux1 = aux1 << 6;
+                        aux1 = aux1 | aux2;
                     }
+                    Thread.sleep(5);
+                    publishProgress(aux1);
                 } catch (IOException e) {
                     break;
                 } catch (InterruptedException e) {
@@ -192,9 +164,6 @@ public class ServiceECG extends Service {
         }
 
         public void leerArchivo(){
-            Integer[] valores = new Integer[2];
-            int aux1, aux2, aux3, aux4;
-            int n1, n2;
             InputStream inputStream = null;
             File file   = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             String files = file.getAbsolutePath()+"/muestra_300hz_16bits.txt";
@@ -208,59 +177,30 @@ public class ServiceECG extends Service {
                     StringBuilder stringBuilder = new StringBuilder();
 
                     while ( (receiveString = bufferedReader.readLine()) != null ) {
-                        String val2 = bufferedReader.readLine();
                         if (isCancelled())
                             break;
-                            n1 = Integer.parseInt(receiveString);
-                            n2 = Integer.parseInt(val2);
+                        String stn2  = bufferedReader.readLine();
+
+                        if(stn2 != null){
+                            int n1 = Integer.parseInt(receiveString);
+                            int n2 = Integer.parseInt(stn2);
+                            int aux1, aux2;
                             aux1 = n1 & 64;
-                            aux3 = n1 & 128;
-
-                            if(aux3 == 128){
-                                if(aux1 == 0)
-                                {
-                                    aux1 = n1 & 0x0F;
-                                    aux2 = n2 & 0x0F;
-                                    aux2 = aux2 << 4;
-                                    aux1 = aux1 | aux2;
-                                }
-                                else
-                                {
-                                    aux1 = n1 & 0x0F;
-                                    aux2 = n2 & 0x0F;
-                                    aux1 = aux1 << 4;
-                                    aux1 = aux1 | aux2;
-                                }
-                                Thread.sleep(5);
-                                float frecuencia;
-                                if(aux1 != 0){
-                                    frecuencia = (256.0f / (float)aux1) * 70.0f;
-                                }else{
-                                    frecuencia = 0;
-                                }
-                                EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
-                            }else
-                            {
-                                if(aux1 == 0)
-                                {
-                                    aux1 = n1 & 0x3F;
-                                    aux2 = n2 & 0x3F;
-                                    aux2 = aux2 << 6;
-                                    aux1 = aux1 | aux2;
-                                }
-                                else
-                                {
-                                    aux1 = n1 & 0x3F;
-                                    aux2 = n2 & 0x3F;
-                                    aux1 = aux1 << 6;
-                                    aux1 = aux1 | aux2;
-                                }
-                                Thread.sleep(5);
-                                publishProgress(aux1);
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux2 = aux2 << 6;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux1 = aux1 << 6;
+                                aux1 = aux1 | aux2;
                             }
-
+                            Thread.sleep(6);
+                            publishProgress(aux1);
+                        }
                     }
-
                     inputStream.close();
                 }
             } catch (FileNotFoundException e) {
@@ -274,8 +214,11 @@ public class ServiceECG extends Service {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            Integer valor = values[0];
-            EventBus.getDefault().post(new GraficarValorEvent(valor));
+            int val = values[0];
+            EventBus.getDefault().post(new GraficarValorEvent(val));
+            /*Intent intent = new Intent("ECG");
+            intent.putExtra("val",val);
+            LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);*/
         }
 
         @Override

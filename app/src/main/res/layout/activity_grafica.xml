@@ -23,13 +23,12 @@
                 android:layout_height="34dp"
                 android:src="@drawable/frecuencia_cardiaca"/>
             <TextView
-                android:id="@+id/txtFrecuencia"
-                android:layout_width="135dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="67 Ipm"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="3dp"
                 android:textSize="20dp"
-                android:visibility="visible"
                 android:textStyle="bold"
                 />
             <Button
@@ -52,12 +51,6 @@
                 android:id="@+id/buttonDetener"
                 android:textStyle="bold"
                 android:onClick="stopService"
-<<<<<<< HEAD
-||||||| merged common ancestors
-                android:layout_marginLeft="280dp"
-=======
-                android:layout_marginLeft="290dp"
->>>>>>> bluethoot
                 android:background="@color/colorAccent"
                 android:textColor="@color/iconsText" />
         </LinearLayout>

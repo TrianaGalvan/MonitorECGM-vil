@@ -9,10 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.service.ServiceECG;
 import com.github.mikephil.charting.charts.LineChart;
@@ -38,8 +36,6 @@ public class Grafica extends AppCompatActivity {
     Button detener;
     @Bind(R.id.buttonEmpezar)
     Button empezar;
-    @Bind(R.id.txtFrecuencia)
-    TextView frecuencia;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +47,17 @@ public class Grafica extends AppCompatActivity {
         ButterKnife.bind(this);
         //Creacion y configuracion de la gráfica.
         grafica.setData(new LineData());
+        /*grafica.getAxisRight().setAxisMaxValue(5000f);
+        grafica.getAxisRight().setAxisMinValue(0f);
+        grafica.getAxisRight().setShowOnlyMinMax(false);
+        grafica.getAxisLeft().setAxisMaxValue(5000f);
+        grafica.getAxisLeft().setAxisMinValue(0f);
+        grafica.getAxisLeft().setShowOnlyMinMax(false);*/
         grafica.setScaleMinima(1.6f, 1f);
         grafica.setHardwareAccelerationEnabled(true);
+
         grafica.invalidate();
 
-        startService();
-        frecuencia.setText("hola");
     }
 
     @Override
@@ -74,8 +75,10 @@ public class Grafica extends AppCompatActivity {
     @Subscribe
     public void onEventoGraficar(GraficarValorEvent event) {
         LineData data = grafica.getData();
-        int val = event.valor;
-        if(data != null) {
+
+        int val = event.numero;
+
+        if (data != null) {
             ILineDataSet set = data.getDataSetByIndex(0);
             if (set == null) {
                 LineDataSet setaux = new LineDataSet(null, "DataSet 1");
@@ -94,17 +97,48 @@ public class Grafica extends AppCompatActivity {
             data.addEntry(new Entry(val, set.getEntryCount()), random);
             grafica.notifyDataSetChanged();
             grafica.moveViewTo(data.getXValCount() - 7, 50f, YAxis.AxisDependency.LEFT);
+        }
+    }
+
+    /*BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, final Intent intent) {
+
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    LineData data = grafica.getData();
+
+                    int val = intent.getIntExtra("val", 0);
+                    if(data != null)
+                    {
+                        ILineDataSet set = data.getDataSetByIndex(0);
+                        if(set == null)
+                        {
+                            LineDataSet setaux = new LineDataSet(null, "DataSet 1");
+                            setaux.setLineWidth(2.5f);
+                            setaux.setCircleRadius(0f);
+                            setaux.setColor(Color.rgb(240, 99, 99));
+                            setaux.setCircleColor(Color.rgb(240, 99, 99));
+                            setaux.setHighLightColor(Color.rgb(190, 190, 190));
+                            setaux.setAxisDependency(YAxis.AxisDependency.LEFT);
+                            setaux.setDrawCubic(true);
+                            set = setaux;
+                            data.addDataSet(set);
+                        }
+                        data.addXValue(set.getEntryCount() + "");
+                        int random = (int) (Math.random() * data.getDataSetCount());
+                        data.addEntry(new Entry(val, set.getEntryCount()), random);
+                        grafica.notifyDataSetChanged();
+                        grafica.moveViewTo(data.getXValCount()-7, 50f, YAxis.AxisDependency.LEFT);
+                    }
+                }
+            });
 
         }
+    };*/
 
-    }
-
-    @Subscribe
-    public void onColocarFrecuencia(ColocarFrecuenciaEvent event){
-        float f = event.frecuencia;
-        String frec = String.format("%.2f",f);
-        frecuencia.setText(frec+" Ipm");
-    }
 
     // Method to start the service
     public void startService() {
