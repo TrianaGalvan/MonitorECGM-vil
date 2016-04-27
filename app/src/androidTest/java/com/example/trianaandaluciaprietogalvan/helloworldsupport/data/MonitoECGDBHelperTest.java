@@ -106,8 +106,6 @@ public class MonitoECGDBHelperTest extends AndroidTestCase{
         columnas.add(PruebaEntry.COLUMN_MUESTRA_COMPLETA);
         columnas.add(PruebaEntry.COLUMN_FRECUENCIA_CARDIACA);
         columnas.add(PruebaEntry.COLUMN_OBSERVACIONES);
-        columnas.add(PruebaEntry.COLUMN_FECHA_ENVIO);
-        columnas.add(PruebaEntry.COLUMN_HORA_ENVIO);
         columnas.add(PruebaEntry.COLUMN_PACIENTE_ID_PACIENTE);
         columnas.add(PruebaEntry.COLUMN_REPORTE_ID_REPORTE);
 

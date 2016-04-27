@@ -25,6 +25,7 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorEC
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String PARAM_CORREO = "correo";
     private DrawerLayout mDrawerLayout;
     private LinearLayout linearLayout;
     private ListView listView1;
@@ -51,11 +52,13 @@ public class MainActivity extends AppCompatActivity {
                 new MenuApp(R.drawable.folder, "Historial"),
                 new MenuApp(R.drawable.monitor, "Enlazar electrocardiógrafo"),
                 new MenuApp(R.drawable.senal_ecg, "Electrocardiograma"),
-                new MenuApp(R.drawable.herramienta, "Herramientas"),
                 new MenuApp(R.drawable.on_off, "Salir")
         };
 
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
         listView1 = (ListView)findViewById(R.id.left_drawer);
 
         //crear el adapter para la lista del menu
@@ -142,11 +145,8 @@ public class MainActivity extends AppCompatActivity {
                     Intent intentecg = new Intent(getBaseContext(),Grafica.class);
                     startActivity(intentecg);
                     break;
-                /* Herramientas */
-                case 3:
-                    break;
                 /* Salir */
-                case 4:
+                case 3:
                     MonitorECGUtils.limpiarUltimoUsuarioEnSesion(getBaseContext());
                     AccountManager am = AccountManager.get(getBaseContext());
                     am.addAccount(getString(R.string.account_type), null, null, null,MainActivity.this, null, null);

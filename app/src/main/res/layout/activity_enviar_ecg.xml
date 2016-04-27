@@ -46,13 +46,27 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Fecha y hora del electrocardiograma:"
+                    android:text="Fecha del electrocardiograma:"
                     android:id="@+id/textView4"
                     android:textSize="16dp"
                     android:textColor="@color/primary_text"
                     android:layout_marginTop="15dp" />
                 <EditText
-                    android:id="@+id/editFechaHora"
+                    android:id="@+id/editFecha"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hora del electrocardiograma:"
+                    android:id="@+id/textHora"
+                    android:textSize="16dp"
+                    android:textColor="@color/primary_text"
+                    android:layout_marginTop="15dp" />
+                <EditText
+                    android:id="@+id/editHora"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:enabled="false"/>
@@ -72,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
                     android:ems="10"
-                    android:id="@+id/editText"
+                    android:id="@+id/editObervaciones"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="0.83"
                     android:layout_marginTop="10dp"/>

@@ -41,6 +41,7 @@
             android:layout_height="165dp"
             android:background="@drawable/fondo_material">
             <TextView
+                android:id="@+id/txtCorreoDrawer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="trianagalvan@gmail.com"

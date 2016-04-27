@@ -1,9 +1,11 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
+
+import java.io.File;
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,7 +31,9 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FECHA,
             MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+MonitorECGContrato.ReporteEntry.COLUMN_RECOMENDACIONES,
             MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_FRECUENCIA_CARDIACA,
-            MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+ MonitorECGContrato.ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO
+            MonitorECGContrato.ReporteEntry.TABLE_NAME+"."+ MonitorECGContrato.ReporteEntry.COLUMN_CARDIOLOGO_ID_CARDIOLOGO,
+            MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+ MonitorECGContrato.PruebaEntry.COLUMN_MUESTRA_COMPLETA
+
     };
 
 
@@ -45,6 +52,7 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
     public static final int COLUMN_RECOMENDACIONES = 1;
     public static final int COLUMN_FRECUENCIA_CARDIACA = 2;
     public static final int COLUMN_REPORTE_ID_CARDIOLOGO = 3;
+    public static final int COLUMN_REPORTE_ID_MUESTRA_NOMBRE = 4;
 
     //PROYECCIONES DE CARDIOLOGO
     public static final int COLUMN_NOMBRE_CAR = 0;
@@ -60,6 +68,8 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
     TextView fechaECG;
     @Bind(R.id.txtRecomendaciones)
     TextView recomendaciones;
+
+    Uri uriPrueba;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +89,7 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
 
     @Override
     public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uriPrueba = getIntent().getData();
+        uriPrueba = getIntent().getData();
         if(id == PRUEBA_DETALLE_LOADER){
             return  new CursorLoader(getBaseContext(),uriPrueba,PROYECCIONES_PRUEBA_DETALLE,null,null,null);
         }else if(id == CARDIOLOGO_LOADER){
@@ -125,6 +135,25 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
     }
 
     public void onClickVerElectrocardiograma(View view) {
+        ContentResolver rs = getContentResolver();
+        String[] archivo = new String[]{
+                MonitorECGContrato.PruebaEntry.COLUMN_MUESTRA_COMPLETA
+        };
+        Cursor cursor = rs.query(uriPrueba, archivo, null, null, null);
+        cursor.moveToFirst();
+        String fileName = cursor.getString(0);
+
+        //eliminar el archivo existente
+        File file = new File(Environment.getExternalStorageDirectory(),fileName);
+        if(file.exists()){
+
+        }else{
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         Intent intent = new Intent(this,Grafica.class);
         startActivity(intent);
     }

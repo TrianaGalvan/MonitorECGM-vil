@@ -180,10 +180,16 @@ public class DatosMedicos extends Fragment implements LoaderManager.LoaderCallba
         }else{
             cv.put(MonitorECGContrato.PacienteEntry.COLUMN_ALTURA,Float.parseFloat(altura.getText().toString()));
         }
-
+        int pesoImc = 0;
+        if(!peso.getText().toString().isEmpty()){
+            pesoImc = Integer.parseInt(peso.getText().toString());
+        }
+        float alturaImc = 0;
         //ACTUALIZAR EL IMC
-        int pesoImc = Integer.parseInt(peso.getText().toString());
-        float alturaImc = Float.parseFloat(altura.getText().toString());
+        if(!altura.getText().toString().isEmpty()) {
+             alturaImc = Float.parseFloat(altura.getText().toString());
+        }
+
         float imcCaclc = 0;
 
         if(pesoImc != 0 && alturaImc != 0){

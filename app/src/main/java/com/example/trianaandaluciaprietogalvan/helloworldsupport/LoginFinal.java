@@ -90,6 +90,8 @@ public class LoginFinal extends AppCompatActivity{
                         }
 
                         Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(MainActivity.PARAM_CORREO,correo);
                         startActivity(intentHistorial);
                         finish();
                     }

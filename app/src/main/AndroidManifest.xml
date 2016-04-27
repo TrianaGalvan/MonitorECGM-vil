@@ -115,7 +115,7 @@
         <activity android:name=".EnviarECG"
                   android:label="Enviar electrocardiograma"
                   android:theme="@style/ThemeDetallePrueba"
-                  android:parentActivityName=".Electrocardiograma"
+                  android:parentActivityName=".MainActivity"
             ></activity>
     </application>
 

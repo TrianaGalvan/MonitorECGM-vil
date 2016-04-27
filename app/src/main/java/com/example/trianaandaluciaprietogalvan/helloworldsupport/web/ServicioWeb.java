@@ -67,9 +67,9 @@ public class ServicioWeb {
     }
 
 
-    public static Response<Prueba> crearPrueba(MultipartBody.Part prueba) throws IOException {
+    public static Response<Prueba> crearPrueba(MultipartBody.Part archivo,String prueba) throws IOException {
         PruebaService pruebaService = retrofit.create(PruebaService.class);
-        Call<Prueba> call = pruebaService.generarPrueba(prueba);
+        Call<Prueba> call = pruebaService.generarPrueba(archivo,prueba);
         return call.execute();
     }
 }

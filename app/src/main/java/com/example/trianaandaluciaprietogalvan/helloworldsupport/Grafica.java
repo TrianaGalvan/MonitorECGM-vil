@@ -8,7 +8,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.service.ServiceECG;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.FileUtilPrueba;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -25,6 +25,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -32,6 +33,8 @@ import butterknife.ButterKnife;
 public class Grafica extends AppCompatActivity {
 
     Intent intent;
+
+    String NOMBRE_ARCHIVO_PRUEBA = "";
 
     @Bind(R.id.senal_cardiaca)
     LineChart grafica;
@@ -56,9 +59,7 @@ public class Grafica extends AppCompatActivity {
         grafica.setHardwareAccelerationEnabled(true);
 
         grafica.invalidate();
-
-        startService();
-        frecuencia.setText("hola");
+        frecuencia.setText("0 Ipm");
     }
 
     @Override
@@ -101,7 +102,7 @@ public class Grafica extends AppCompatActivity {
 
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onColocarFrecuencia(ColocarFrecuenciaEvent event){
         float f = event.frecuencia;
         String frec = String.format("%.2f",f);
@@ -110,9 +111,17 @@ public class Grafica extends AppCompatActivity {
 
     // Method to start the service
     public void startService() {
+        //Crear el arcivo donde se va  a guardar la prueba
         intent = new Intent(getBaseContext(), ServiceECG.class);
+        Bundle bundle = new Bundle();
+        NOMBRE_ARCHIVO_PRUEBA = FileUtilPrueba.generarNombreArch(getBaseContext());
+        bundle.putString(ServiceECG.PARAM_NAME_FILE,NOMBRE_ARCHIVO_PRUEBA);
+        bundle.putString(ServiceECG.TIPO_HILO,"archivo");
+        intent.putExtras(bundle);
         startService(intent);
+
     }
+
 
     // Method to stop the service
     public void stopService(View view) {
@@ -135,6 +144,10 @@ public class Grafica extends AppCompatActivity {
                         empezar.setEnabled(true);
                         stopService(intent);
                         Intent intent = new Intent(getBaseContext(), EnviarECG.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(EnviarECG.PARAM_FREC,frecuencia.getText().toString());
+                        bundle.putString(EnviarECG.PARAM_NOMBRE_ARCHIVO,NOMBRE_ARCHIVO_PRUEBA);
+                        intent.putExtras(bundle);
                         startActivity(intent);
                     }
                 })

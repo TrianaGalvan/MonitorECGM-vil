@@ -7,6 +7,8 @@ import java.util.List;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 
@@ -17,6 +19,7 @@ public interface PruebaService {
     @GET("/prueba/correo")
     Call<List<Prueba>> obtenerPruebas(@Query("email") String email);
 
-
-    Call<Prueba> generarPrueba(@Part MultipartBody.Part prueba);
+    @Multipart
+    @POST("/prueba")
+    Call<Prueba> generarPrueba(@Part MultipartBody.Part archivo,@Part("prueba") String prueba);
 }

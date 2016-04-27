@@ -24,11 +24,11 @@
                 android:src="@drawable/frecuencia_cardiaca"/>
             <TextView
                 android:id="@+id/txtFrecuencia"
-                android:layout_width="135dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="3dp"
-                android:textSize="20dp"
+                android:textSize="18dp"
                 android:visibility="visible"
                 android:textStyle="bold"
                 />
@@ -44,7 +44,7 @@
                 android:background="@color/colorAccent"
                 android:textColor="@color/iconsText" />
             <Button
-                android:layout_marginLeft="16dp"
+                android:layout_marginLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
                 android:text="@string/detener_ecg"
@@ -52,7 +52,6 @@
                 android:id="@+id/buttonDetener"
                 android:textStyle="bold"
                 android:onClick="stopService"
-                android:layout_marginLeft="280dp"
                 android:background="@color/colorAccent"
                 android:textColor="@color/iconsText" />
         </LinearLayout>

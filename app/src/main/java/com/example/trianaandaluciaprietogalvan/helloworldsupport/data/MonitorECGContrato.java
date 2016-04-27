@@ -94,10 +94,9 @@ public class MonitorECGContrato {
         public static final String COLUMN_MUESTRA_COMPLETA = "muestracompleta";
         public static final String COLUMN_FRECUENCIA_CARDIACA = "frecuenciacardiaca";
         public static final String COLUMN_OBSERVACIONES = "observaciones";
-        public static final String COLUMN_FECHA_ENVIO = "fechaenvio";
-        public static final String COLUMN_HORA_ENVIO = "horaenvio";
         public static final String COLUMN_PACIENTE_ID_PACIENTE = "Paciente_idPaciente";
         public static final String COLUMN_REPORTE_ID_REPORTE = "Reporte_idReporte";
+        public static final String COLUMN_UPDATE = "actualizar";
 
         public static final Uri CONTENT_URI = BASE_CONTENT_AUTHORITY.buildUpon().appendPath(PATH_PRUEBA).build();
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE+"/"+CONTENT_AUTHORITY+"/"+PATH_PRUEBA;

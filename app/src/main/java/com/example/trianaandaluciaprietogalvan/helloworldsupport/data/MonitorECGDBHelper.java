@@ -59,17 +59,16 @@ public class MonitorECGDBHelper extends SQLiteOpenHelper{
 
         final String SQL_CREATE_PRUEBA_TABLE =
                 "CREATE TABLE "+ PruebaEntry.TABLE_NAME +"("+
-                        PruebaEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "+
+                        PruebaEntry._ID + " INTEGER PRIMARY KEY, "+
                         PruebaEntry.COLUMN_FECHA  + " TEXT NOT NULL, "+
                         PruebaEntry.COLUMN_HORA  + " TEXT NOT NULL, "+
                         PruebaEntry.COLUMN_MUESTRA_QRS + " TEXT, "+
                         PruebaEntry.COLUMN_MUESTRA_COMPLETA + " TEXT, "+
-                        PruebaEntry.COLUMN_FRECUENCIA_CARDIACA + " INTEGER, "+
                         PruebaEntry.COLUMN_OBSERVACIONES + " TEXT, "+
-                        PruebaEntry.COLUMN_FECHA_ENVIO  + " TEXT, "+
-                        PruebaEntry.COLUMN_HORA_ENVIO  + " TEXT, "+
+                        PruebaEntry.COLUMN_FRECUENCIA_CARDIACA + " INTEGER, "+
                         PruebaEntry.COLUMN_PACIENTE_ID_PACIENTE  + " INTEGER, "+
                         PruebaEntry.COLUMN_REPORTE_ID_REPORTE  + " INTEGER, "+
+                        PruebaEntry.COLUMN_UPDATE +" INTEGER, "+
 
                         //FOREIGN KEY a paciente
                         " FOREIGN KEY ("+PruebaEntry.COLUMN_PACIENTE_ID_PACIENTE+") REFERENCES "+

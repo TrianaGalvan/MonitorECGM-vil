@@ -17,11 +17,10 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECG
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Cardiologo;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Paciente;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.CardiologoDAO;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.HourUtils;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
@@ -147,7 +146,7 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         }
 
         //obtener la fecha
-        String date = getDate();
+        String date = HourUtils.getDate();
         paciente.fechamodificacion = date;
 
         ServicioWeb.insertarPaciente(paciente, new Callback<Paciente>() {
@@ -189,11 +188,5 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
         }
     }
 
-
-    public String getDate(){
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(c.getTime());
-    }
 
 }
