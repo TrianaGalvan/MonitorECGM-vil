@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 import okhttp3.MultipartBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServicioWeb {
     public static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://monitor-ecg.herokuapp.com/")
+            .baseUrl("http://192.168.0.2:8080/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
@@ -69,7 +70,13 @@ public class ServicioWeb {
 
     public static Response<Prueba> crearPrueba(MultipartBody.Part archivo,String prueba) throws IOException {
         PruebaService pruebaService = retrofit.create(PruebaService.class);
-        Call<Prueba> call = pruebaService.generarPrueba(archivo,prueba);
+        Call<Prueba> call = pruebaService.generarPrueba(archivo, prueba);
         return call.execute();
+    }
+
+    public static void descargarPrueba(int id,Callback<ResponseBody> respuesta ) throws IOException {
+        PruebaService pruebaService = retrofit.create(PruebaService.class);
+        Call<ResponseBody> call = pruebaService.descargarPrueba(id);
+        call.enqueue(respuesta);
     }
 }

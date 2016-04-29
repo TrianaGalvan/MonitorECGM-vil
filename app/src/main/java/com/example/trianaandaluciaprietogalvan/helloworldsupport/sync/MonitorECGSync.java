@@ -24,6 +24,7 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Pacien
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Prueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.entities.Reporte;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.CardiologoDAO;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.FileUtilPrueba;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PruebaDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
@@ -184,7 +185,11 @@ public class MonitorECGSync extends AbstractThreadedSyncAdapter {
                 String[] seleccion = new String[]{
                         Integer.toString(id)
                 };
+                //eliminar la prueba localmente antes de insertar la nueva prueba que se bajo del servidor
                 int r = rs.delete(PruebaEntry.CONTENT_URI,SELECCION_UPDATE_PRUEBA,seleccion);
+                //eliminar el archivo que se creo localmente
+                FileUtilPrueba.eliminarArchivo(pruebaServidor.muestracompleta);
+                //insertar la nueva prueba que mando el servidor
                 insertarPruebas(pruebas);
             }else{
                 Log.e("Sync","Hubo algun error en el servidor");

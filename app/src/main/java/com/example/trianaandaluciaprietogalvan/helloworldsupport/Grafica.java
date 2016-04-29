@@ -32,6 +32,7 @@ import butterknife.ButterKnife;
 
 public class Grafica extends AppCompatActivity {
 
+    public static final String PARAM_SERVICE = "initServicio";
     Intent intent;
 
     String NOMBRE_ARCHIVO_PRUEBA = "";
@@ -45,6 +46,8 @@ public class Grafica extends AppCompatActivity {
     @Bind(R.id.txtFrecuencia)
     TextView frecuencia;
 
+    String valParamService = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,9 +60,10 @@ public class Grafica extends AppCompatActivity {
         grafica.setData(new LineData());
         grafica.setScaleMinima(1.6f, 1f);
         grafica.setHardwareAccelerationEnabled(true);
-
         grafica.invalidate();
         frecuencia.setText("0 Ipm");
+        Bundle bundle = getIntent().getExtras();
+        valParamService = bundle.getString(valParamService);
     }
 
     @Override
@@ -116,7 +120,7 @@ public class Grafica extends AppCompatActivity {
         Bundle bundle = new Bundle();
         NOMBRE_ARCHIVO_PRUEBA = FileUtilPrueba.generarNombreArch(getBaseContext());
         bundle.putString(ServiceECG.PARAM_NAME_FILE,NOMBRE_ARCHIVO_PRUEBA);
-        bundle.putString(ServiceECG.TIPO_HILO,"archivo");
+        bundle.putString(ServiceECG.TIPO_HILO,valParamService);
         intent.putExtras(bundle);
         startService(intent);
 

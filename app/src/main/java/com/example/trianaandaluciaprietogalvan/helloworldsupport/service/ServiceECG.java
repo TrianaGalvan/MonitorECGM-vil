@@ -62,6 +62,7 @@ public class ServiceECG extends Service {
     private long startTime = 0;
     private long millis = 0;
     IntercambioDatos intercambio;
+    LeerArchivo leerArchivo;
     ConexionBT conexion;
     boolean estadoBt;
     boolean estadoConexion;
@@ -70,6 +71,7 @@ public class ServiceECG extends Service {
     File pruebaFile;
     OutputStreamWriter fileOutput;
 
+    String ar;
 
     int indiceInicio = 0, indiceFinal = 0;
 
@@ -86,22 +88,27 @@ public class ServiceECG extends Service {
             }
         }*/
         Bundle bundle = intent.getExtras();
-        String ar = bundle.getString(PARAM_NAME_FILE);
-        String tipo = bundle.getString(TIPO_HILO);
-        if(tipo.equals("archivo")){
+        ar  = bundle.getString(PARAM_NAME_FILE);
 
+        String tipoHilo = "";
+        tipoHilo = bundle.getString(TIPO_HILO);
+        if(tipoHilo.equals("ver")){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+                leerArchivo = (LeerArchivo) new LeerArchivo().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+            } else {
+                leerArchivo = (LeerArchivo) new LeerArchivo().execute();
+            }
+        }else{
+            //generar el archivo donde se guardara al muestra
+            fileOutput = FileUtilPrueba.generarArchivio(ar);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+            } else {
+                intercambio = (IntercambioDatos) new IntercambioDatos().execute();
+            }
         }
-        //generar el archivo donde se guardara al muestra
-        fileOutput = FileUtilPrueba.generarArchivio(bundle.getString(PARAM_NAME_FILE));
-        //EventBus.getDefault().post(new FileEvent(FileUtilPrueba.NOMBRE_ARCHIVO));
 
-        //crear el archivo donde se guardara la prueba
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-        } else {
-            intercambio = (IntercambioDatos) new IntercambioDatos().execute();
-        }
         //Do what you need in onStartCommand when service has been started
         return START_NOT_STICKY;
     }
@@ -143,8 +150,6 @@ public class ServiceECG extends Service {
         }
 
         public void leerBluetooth() {
-
-            Integer[] valores = new Integer[2];
             int n1, n2;
             int nBytes;
             // Read from the InputStream
@@ -294,11 +299,6 @@ public class ServiceECG extends Service {
                 os.close();
                 is.close();
                 //cerrar el archivo
-                try {
-                    fileOutput.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 //Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
@@ -307,7 +307,7 @@ public class ServiceECG extends Service {
     }
 
 
-    private class ConexionBT extends AsyncTask<Void, Void, Void> {
+    private class ConexionBT extends AsyncTask<Bundle, Void, Void> {
 
         public ConexionBT() {
             estadoConexion = false;
@@ -319,7 +319,7 @@ public class ServiceECG extends Service {
         }
 
         @Override
-        protected Void doInBackground(Void... dispositivos) {
+        protected Void doInBackground(Bundle... dispositivos) {
             try {
                 if (btSocket == null || !estadoBt) {
                     bluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -361,15 +361,117 @@ public class ServiceECG extends Service {
 
     }
 
+    public class LeerArchivo extends AsyncTask<Void, Integer, Void> {
+
+        OutputStreamWriter osw;
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            leerArchivo();
+            return null;
+        }
+
+
+
+        public void leerArchivo() {
+            //todo generar el archivo para leer
+            Integer[] valores = new Integer[2];
+            int aux1, aux2, aux3, aux4;
+            int n1, n2;
+            InputStream inputStream = null;
+            File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            String files = file.getAbsolutePath() + "/muestra_300hz_16bits.txt";
+            String ruta = "/storage/emulated/0/Download/muestra_300hz_16bits.txt";
+            try {
+                inputStream = new FileInputStream(new File(files));
+                if (inputStream != null) {
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String receiveString = "";
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while ((receiveString = bufferedReader.readLine()) != null) {
+                        String val2 = bufferedReader.readLine();
+                        if (isCancelled())
+                            break;
+                        n1 = Integer.parseInt(receiveString);
+                        n2 = Integer.parseInt(val2);
+                        aux1 = n1 & 64;
+                        aux3 = n1 & 128;
+
+                        if (aux3 == 128) {
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x0F;
+                                aux2 = n2 & 0x0F;
+                                aux2 = aux2 << 4;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x0F;
+                                aux2 = n2 & 0x0F;
+                                aux1 = aux1 << 4;
+                                aux1 = aux1 | aux2;
+                            }
+                            Thread.sleep(5);
+                            float frecuencia = (256.0f / (float) aux1) * 70.0f;
+                            if (Float.isInfinite(frecuencia) || Float.isNaN(frecuencia))
+                                frecuencia = 0;
+                            EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
+                        } else {
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux2 = aux2 << 6;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux1 = aux1 << 6;
+                                aux1 = aux1 | aux2;
+                            }
+                            Thread.sleep(5);
+                            publishProgress(aux1);
+                            //escribir en el archivo los valroes de la muestra
+                        }
+                        fileOutput.write(Integer.toString(n1) + "\n");
+                        fileOutput.write(Integer.toString(n2) + "\n");
+                    }
+
+                    inputStream.close();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Integer valor = values[0];
+            EventBus.getDefault().post(new GraficarValorEvent(valor));
+        }
+
+        @Override
+        protected void onCancelled(Void aVoid) {
+
+        }
+    }
+
     @Override
     public void onDestroy() {
         intercambio.cancel(true);
         intercambio = null;
-        /*try {
+        try {
             fileOutput.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 }
 

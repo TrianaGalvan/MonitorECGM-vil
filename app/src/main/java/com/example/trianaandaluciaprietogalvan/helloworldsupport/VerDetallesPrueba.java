@@ -10,19 +10,29 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.FileUtilPrueba;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.NetworkUtil;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
 import java.io.File;
 import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class VerDetallesPrueba extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    public final String TAG = "VerDetallePrueba";
     public static final int PRUEBA_DETALLE_LOADER = 2;
     public static final int CARDIOLOGO_LOADER = 3;
 
@@ -134,27 +144,66 @@ public class VerDetallesPrueba extends AppCompatActivity implements LoaderManage
 
     }
 
-    public void onClickVerElectrocardiograma(View view) {
+    public void onClickVerElectrocardiogramaPaciente(View view) {
+        //verificar si el archivo existe
+        //verificar si se tiene conexion
         ContentResolver rs = getContentResolver();
         String[] archivo = new String[]{
-                MonitorECGContrato.PruebaEntry.COLUMN_MUESTRA_COMPLETA
+                MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry._ID,
+                MonitorECGContrato.PruebaEntry.TABLE_NAME+"."+MonitorECGContrato.PruebaEntry.COLUMN_MUESTRA_COMPLETA
         };
         Cursor cursor = rs.query(uriPrueba, archivo, null, null, null);
         cursor.moveToFirst();
-        String fileName = cursor.getString(0);
-
-        //eliminar el archivo existente
-        File file = new File(Environment.getExternalStorageDirectory(),fileName);
-        if(file.exists()){
-
-        }else{
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+        String fileName = cursor.getString(1);
+        int id = cursor.getInt(0);
+        cursor.close();
+        if(fileName != null){
+            //verificar si el archivo existe
+            File file = new File(Environment.getExternalStorageDirectory(),fileName);
+            if(!file.exists()){
+                if(!NetworkUtil.isOnline(this)){
+                    Toast.makeText(this,"Se necesita red para esta operación",Toast.LENGTH_SHORT);
+                }else{
+                    //descargar el archivo
+                    try {
+                        descargarArchivo(fileName,id);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(this,"Descargando la muestra",Toast.LENGTH_SHORT);
             }
+
+
+            Intent intent = new Intent(this,Grafica.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(Grafica.PARAM_SERVICE,"ver");
+            intent.putExtras(bundle);
+            startActivity(intent);
         }
-        Intent intent = new Intent(this,Grafica.class);
-        startActivity(intent);
+    }
+
+    public void descargarArchivo(final String fileName,int id) throws IOException {
+        ServicioWeb.descargarPrueba(id, new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.isSuccessful()){
+                    Log.d(TAG, "server contacted and has file");
+                    boolean writtenToDisk = FileUtilPrueba.writeResponseBodyToDisk(response.body(), fileName);
+                    Log.d(TAG, "file download was a success? " + writtenToDisk);
+                }else{
+                    Log.d(TAG, "server contact failed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("VerDetallesPrueba","No se descargo el archivo del servidor");
+            }
+        });
+    }
+
+
+    public void onClickVerElectrocardiogramaPacient(View view) {
     }
 }
