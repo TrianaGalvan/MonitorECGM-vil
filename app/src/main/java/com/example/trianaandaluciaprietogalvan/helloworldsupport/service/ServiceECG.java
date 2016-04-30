@@ -70,6 +70,7 @@ public class ServiceECG extends Service {
     //archivo de la prueba
     File pruebaFile;
     OutputStreamWriter fileOutput;
+    InputStream inputStream;
 
     String ar;
 
@@ -92,9 +93,9 @@ public class ServiceECG extends Service {
 
         String tipoHilo = "";
         tipoHilo = bundle.getString(TIPO_HILO);
+
         if(tipoHilo.equals("ver")){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-
                 leerArchivo = (LeerArchivo) new LeerArchivo().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
             } else {
                 leerArchivo = (LeerArchivo) new LeerArchivo().execute();
@@ -219,16 +220,18 @@ public class ServiceECG extends Service {
             File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
             String files = file.getAbsolutePath() + "/muestra_300hz_16bits.txt";
             String ruta = "/storage/emulated/0/Download/muestra_300hz_16bits.txt";
+
             try {
                 inputStream = new FileInputStream(new File(files));
-                if (inputStream != null) {
+                if(inputStream != null){
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     String receiveString = "";
+                    String val2 = "";
                     StringBuilder stringBuilder = new StringBuilder();
 
-                    while ((receiveString = bufferedReader.readLine()) != null) {
-                        String val2 = bufferedReader.readLine();
+                    while ((receiveString = bufferedReader.readLine()) != null){
+                        val2 = bufferedReader.readLine();
                         if (isCancelled())
                             break;
                         n1 = Integer.parseInt(receiveString);
@@ -267,12 +270,10 @@ public class ServiceECG extends Service {
                             }
                             Thread.sleep(5);
                             publishProgress(aux1);
-                            //escribir en el archivo los valroes de la muestra
                         }
                         fileOutput.write(Integer.toString(n1) + "\n");
                         fileOutput.write(Integer.toString(n2) + "\n");
                     }
-
                     inputStream.close();
                 }
             } catch (FileNotFoundException e) {
@@ -362,11 +363,19 @@ public class ServiceECG extends Service {
     }
 
     public class LeerArchivo extends AsyncTask<Void, Integer, Void> {
-
-        OutputStreamWriter osw;
+        InputStream inputStreamLeer;
+        public LeerArchivo(){
+            inputStreamLeer = null;
+        }
 
         @Override
         protected void onPreExecute() {
+            File pruebaFile = new File(Environment.getExternalStorageDirectory(),ar);
+            try {
+                inputStreamLeer = new FileInputStream(pruebaFile);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -378,24 +387,18 @@ public class ServiceECG extends Service {
 
 
         public void leerArchivo() {
-            //todo generar el archivo para leer
-            Integer[] valores = new Integer[2];
             int aux1, aux2, aux3, aux4;
             int n1, n2;
-            InputStream inputStream = null;
-            File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            String files = file.getAbsolutePath() + "/muestra_300hz_16bits.txt";
-            String ruta = "/storage/emulated/0/Download/muestra_300hz_16bits.txt";
             try {
-                inputStream = new FileInputStream(new File(files));
-                if (inputStream != null) {
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                if(inputStreamLeer != null){
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStreamLeer);
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     String receiveString = "";
+                    String val2 = "";
                     StringBuilder stringBuilder = new StringBuilder();
 
-                    while ((receiveString = bufferedReader.readLine()) != null) {
-                        String val2 = bufferedReader.readLine();
+                    while ((receiveString = bufferedReader.readLine()) != null){
+                        val2 = bufferedReader.readLine();
                         if (isCancelled())
                             break;
                         n1 = Integer.parseInt(receiveString);
@@ -434,13 +437,9 @@ public class ServiceECG extends Service {
                             }
                             Thread.sleep(5);
                             publishProgress(aux1);
-                            //escribir en el archivo los valroes de la muestra
                         }
-                        fileOutput.write(Integer.toString(n1) + "\n");
-                        fileOutput.write(Integer.toString(n2) + "\n");
                     }
-
-                    inputStream.close();
+                    inputStreamLeer.close();
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -459,19 +458,29 @@ public class ServiceECG extends Service {
 
         @Override
         protected void onCancelled(Void aVoid) {
-
+            try {
+                inputStreamLeer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void onDestroy() {
-        intercambio.cancel(true);
-        intercambio = null;
-        try {
-            fileOutput.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(intercambio != null){
+            intercambio.cancel(true);
+            intercambio = null;
+            try {
+                fileOutput.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            leerArchivo.cancel(true);
+            leerArchivo = null;
         }
+        inputStream = null;
     }
 }
 

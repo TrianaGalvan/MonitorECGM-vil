@@ -127,19 +127,13 @@ public class EnviarECG extends AppCompatActivity {
         if (net) {
             //verificar el tipo de conexion
             boolean mobileNet = NetworkUtil.isConnctedToMobileNet(this);
-            if (mobileNet) {
-                crearPrueba();
-                Toast.makeText(this, "Sincronizando la prueba", Toast.LENGTH_SHORT).show();
-                enviarGrafica(AccountUtil.getAccount(getBaseContext()));
-            } else {
-                crearPrueba();
-                Toast.makeText(this, "Se creó la prueba correctamente", Toast.LENGTH_SHORT).show();
-                enviarGrafica(AccountUtil.getAccount(getBaseContext()));
-            }
+            crearPrueba();
+            Toast.makeText(this, "Se creó la prueba correctamente", Toast.LENGTH_SHORT).show();
         } else {
             crearPrueba();
             Toast.makeText(this, "No hay red, se actualizará en cuanto se tenga conexión", Toast.LENGTH_SHORT).show();
         }
+        enviarGrafica(AccountUtil.getAccount(getBaseContext()));
     }
 
     private void crearPrueba() {
@@ -155,44 +149,10 @@ public class EnviarECG extends AppCompatActivity {
         cv.put(MonitorECGContrato.PruebaEntry.COLUMN_FRECUENCIA_CARDIACA,(int)Float.parseFloat(vals[0]));
         rs.insert(MonitorECGContrato.PruebaEntry.CONTENT_URI,cv);
     }
-
-
-    /*public void showDialog() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this);
-
-        // set title
-        alertDialogBuilder.setTitle("Tipo de conexión");
-
-        // set dialog message
-        alertDialogBuilder
-                .setMessage("Se actualizará tu electrocardiograma con una red móvil")
-                .setCancelable(false)
-                .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        crearPrueba();
-                        enviarGrafica(AccountUtil.getAccount(getBaseContext()));
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // if this button is clicked, just close
-                        // the dialog box and do nothing
-                        dialog.cancel();
-                        Toast.makeText(getBaseContext(), "Los datos se actualizarán en cuanto se tenga red", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // show it
-        alertDialog.show();
-    }*/
+    
 
 
     public void enviarGrafica(Account account){
-        //MonitorECGSync.syncInmediatly(getBaseContext(), account, null);
         Intent inten = new Intent(getBaseContext(),MainActivity.class);
         startActivity(inten);
     }

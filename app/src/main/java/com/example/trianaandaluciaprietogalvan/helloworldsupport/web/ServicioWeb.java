@@ -20,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServicioWeb {
     public static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://192.168.0.2:8080/")
+            .baseUrl("http://192.168.0.4:8080/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
@@ -74,9 +74,9 @@ public class ServicioWeb {
         return call.execute();
     }
 
-    public static void descargarPrueba(int id,Callback<ResponseBody> respuesta ) throws IOException {
+    public static Response<ResponseBody> descargarPrueba(int id) throws IOException {
         PruebaService pruebaService = retrofit.create(PruebaService.class);
         Call<ResponseBody> call = pruebaService.descargarPrueba(id);
-        call.enqueue(respuesta);
+        return call.execute();
     }
 }

@@ -33,6 +33,8 @@ import butterknife.ButterKnife;
 public class Grafica extends AppCompatActivity {
 
     public static final String PARAM_SERVICE = "initServicio";
+    public static final String PARAM_FRECUENCIA = "frecuencia";
+    public static final String PARAM_NAME_FILE = "nombreArchivo";
     Intent intent;
 
     String NOMBRE_ARCHIVO_PRUEBA = "";
@@ -47,6 +49,7 @@ public class Grafica extends AppCompatActivity {
     TextView frecuencia;
 
     String valParamService = "";
+    String frecuenciaCardiaca = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +65,21 @@ public class Grafica extends AppCompatActivity {
         grafica.setHardwareAccelerationEnabled(true);
         grafica.invalidate();
         frecuencia.setText("0 Ipm");
+
         Bundle bundle = getIntent().getExtras();
-        valParamService = bundle.getString(valParamService);
+        if(bundle != null){
+            valParamService = bundle.getString(PARAM_SERVICE);
+            //verificar los botones
+            assert valParamService != null;
+            if(valParamService.equals("ver")){
+                frecuenciaCardiaca = bundle.getString(PARAM_FRECUENCIA);
+                NOMBRE_ARCHIVO_PRUEBA = bundle.getString(PARAM_NAME_FILE);
+                frecuencia.setText(frecuenciaCardiaca+" Ipm");
+                empezar.setVisibility(View.INVISIBLE);
+                detener.setText("Salir");
+                startService();
+            }
+        }
     }
 
     @Override
@@ -118,7 +134,9 @@ public class Grafica extends AppCompatActivity {
         //Crear el arcivo donde se va  a guardar la prueba
         intent = new Intent(getBaseContext(), ServiceECG.class);
         Bundle bundle = new Bundle();
-        NOMBRE_ARCHIVO_PRUEBA = FileUtilPrueba.generarNombreArch(getBaseContext());
+        if(!valParamService.equals("ver")){
+            NOMBRE_ARCHIVO_PRUEBA = FileUtilPrueba.generarNombreArch(getBaseContext());
+        }
         bundle.putString(ServiceECG.PARAM_NAME_FILE,NOMBRE_ARCHIVO_PRUEBA);
         bundle.putString(ServiceECG.TIPO_HILO,valParamService);
         intent.putExtras(bundle);
@@ -129,7 +147,13 @@ public class Grafica extends AppCompatActivity {
 
     // Method to stop the service
     public void stopService(View view) {
-        showDialog();
+        if(detener.getText().toString().equals("Salir")){
+            stopService(intent);
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+        }else{
+            showDialog();
+        }
     }
 
     public void showDialog() {
