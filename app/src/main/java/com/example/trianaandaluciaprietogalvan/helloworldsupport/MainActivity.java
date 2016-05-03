@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout linearLayout;
     private ListView listView1;
 
-
-
     public MainActivity() {
     }
 
@@ -44,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
 
         //opciones del menu
         MenuApp menu_data[] = new MenuApp[]

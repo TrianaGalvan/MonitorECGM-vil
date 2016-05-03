@@ -53,6 +53,7 @@
     <string name="tittle_agregar_ecg">Agregar electrocardiógrafo</string>
     <string name="tittle_enviar_ecg">Enviar</string>
     <string name="tittle_cancelar_ecg">Cancelar</string>
+    <string name="loading">Cargando ...</string>
 
 
 </resources>

@@ -16,7 +16,7 @@ import retrofit2.http.Path;
 public interface PacienteService {
     @FormUrlEncoded
     @POST("/ultimo/paciente/login")
-    Call<Paciente> loginPaciente(@Field("correo") String correo,@Field("pass") String pass);
+    Call<Paciente> loginPaciente(@Field("correo") String correo,@Field("pass") String pass,@Field("token")String token);
     @FormUrlEncoded
     @POST("/ultimo/paciente/verificarCorreo")
     Call<Boolean> verificarCorreo(@Field("correo") String correo);

@@ -149,7 +149,7 @@ public class EnviarECG extends AppCompatActivity {
         cv.put(MonitorECGContrato.PruebaEntry.COLUMN_FRECUENCIA_CARDIACA,(int)Float.parseFloat(vals[0]));
         rs.insert(MonitorECGContrato.PruebaEntry.CONTENT_URI,cv);
     }
-    
+
 
 
     public void enviarGrafica(Account account){

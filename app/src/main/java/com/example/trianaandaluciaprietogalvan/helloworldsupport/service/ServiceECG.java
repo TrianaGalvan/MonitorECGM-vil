@@ -96,7 +96,7 @@ public class ServiceECG extends Service {
 
         if(tipoHilo.equals("ver")){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                leerArchivo = (LeerArchivo) new LeerArchivo().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+                leerArchivo = (LeerArchivo) new LeerArchivo().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
                 leerArchivo = (LeerArchivo) new LeerArchivo().execute();
             }
@@ -104,7 +104,7 @@ public class ServiceECG extends Service {
             //generar el archivo donde se guardara al muestra
             fileOutput = FileUtilPrueba.generarArchivio(ar);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+                intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
                 intercambio = (IntercambioDatos) new IntercambioDatos().execute();
             }

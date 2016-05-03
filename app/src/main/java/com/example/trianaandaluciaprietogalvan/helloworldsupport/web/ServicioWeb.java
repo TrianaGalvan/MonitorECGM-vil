@@ -25,9 +25,9 @@ public class ServicioWeb {
             .build();
 
 
-    public static void loginPaciente(String correo, String pass, Callback<Paciente> respuesta){
+    public static void loginPaciente(String correo, String pass,String token, Callback<Paciente> respuesta){
         PacienteService pacienteService = retrofit.create(PacienteService.class);
-        Call<Paciente> call = pacienteService.loginPaciente(correo, pass);
+        Call<Paciente> call = pacienteService.loginPaciente(correo, pass,token);
         call.enqueue(respuesta);
     }
 
