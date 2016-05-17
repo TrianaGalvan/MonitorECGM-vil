@@ -107,7 +107,8 @@ public class Registrarse extends AppCompatActivity {
         boolean bandera = verificarCampos();
         if (bandera){
             //verificar si existe el correo
-            TextView correo = (TextView) findViewById(R.id.txtCorreo);final String sCorreos = correo.getText().toString();
+            TextView correo = (TextView) findViewById(R.id.txtCorreo);
+            final String sCorreos = correo.getText().toString();
             final int duration = Toast.LENGTH_SHORT;
             ServicioWeb.verfificarCorreo(sCorreos, new Callback<Boolean>() {
                 @Override
