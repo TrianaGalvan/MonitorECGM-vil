@@ -398,47 +398,13 @@ public class ServiceECG extends Service {
                     StringBuilder stringBuilder = new StringBuilder();
 
                     while ((receiveString = bufferedReader.readLine()) != null){
-                        val2 = bufferedReader.readLine();
                         if (isCancelled())
                             break;
                         n1 = Integer.parseInt(receiveString);
-                        n2 = Integer.parseInt(val2);
-                        aux1 = n1 & 64;
-                        aux3 = n1 & 128;
-
-                        if (aux3 == 128) {
-                            if (aux1 == 0) {
-                                aux1 = n1 & 0x0F;
-                                aux2 = n2 & 0x0F;
-                                aux2 = aux2 << 4;
-                                aux1 = aux1 | aux2;
-                            } else {
-                                aux1 = n1 & 0x0F;
-                                aux2 = n2 & 0x0F;
-                                aux1 = aux1 << 4;
-                                aux1 = aux1 | aux2;
-                            }
-                            Thread.sleep(5);
-                            float frecuencia = (256.0f / (float) aux1) * 70.0f;
-                            if (Float.isInfinite(frecuencia) || Float.isNaN(frecuencia))
-                                frecuencia = 0;
-                            EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
-                        } else {
-                            if (aux1 == 0) {
-                                aux1 = n1 & 0x3F;
-                                aux2 = n2 & 0x3F;
-                                aux2 = aux2 << 6;
-                                aux1 = aux1 | aux2;
-                            } else {
-                                aux1 = n1 & 0x3F;
-                                aux2 = n2 & 0x3F;
-                                aux1 = aux1 << 6;
-                                aux1 = aux1 | aux2;
-                            }
-                            Thread.sleep(5);
-                            publishProgress(aux1);
-                        }
+                        Thread.sleep(5);
+                        publishProgress(n1);
                     }
+
                     inputStreamLeer.close();
                 }
             } catch (FileNotFoundException e) {
