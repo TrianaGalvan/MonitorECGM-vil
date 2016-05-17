@@ -55,7 +55,6 @@ public class AgregarElectrocardiografo extends AppCompatActivity {
 
         ArrayList<String> nombresispositivos = enlazar();
         if(nombresispositivos != null){
-            nombresispositivos.add("Dispositivo 1");
             //colocar el adapter
             ecgsAdapter.setDispositivos(nombresispositivos);
             lista.setAdapter(ecgsAdapter);
@@ -87,7 +86,6 @@ public class AgregarElectrocardiografo extends AppCompatActivity {
                         Toast.makeText(getBaseContext(),"Se guardo el nombre del ECG",Toast.LENGTH_SHORT).show();
                     }
                 }
-
             }
         });
     }

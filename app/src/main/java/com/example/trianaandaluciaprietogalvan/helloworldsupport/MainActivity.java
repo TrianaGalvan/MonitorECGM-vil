@@ -1,5 +1,6 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.AccountUtil;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.MonitorECGUtils;
 
 
@@ -56,8 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        //colocar el correo
+        Account cuenta = AccountUtil.getAccount(this);
+        String name = cuenta.name;
         TextView textView = (TextView) findViewById(R.id.txtCorreoDrawer);
-        textView.setText(correo);
+        textView.setText(name);
 
         listView1 = (ListView)findViewById(R.id.left_drawer);
 
