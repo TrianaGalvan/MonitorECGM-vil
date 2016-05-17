@@ -37,6 +37,7 @@
         <activity
             android:name=".Registrarse"
             android:label="@string/title_activity_registrarse"
+            android:launchMode="singleTop"
             android:parentActivityName=".LoginFinal"
             android:theme="@style/ThemeRegistrarse" />
         <activity

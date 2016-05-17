@@ -66,14 +66,9 @@ public class LoginFinal extends AppCompatActivity{
         new RegisterForPushNotifications().execute();
         /* --------------------------------------*/
 
-        //esperando a obtener el token
-        while (true){
-            if(!tokenPushy.equals("")){
-                break;
-            }
-        }
+    }
 
-        //obtener los datos del form
+    private void loginPaciente() {
         TextView correoTxt= (TextView) findViewById(R.id.txtCorreo);
         TextView contrasenaTxt = (TextView) findViewById(R.id.txtContraseña);
         final String correo = correoTxt.getText().toString();
@@ -87,11 +82,11 @@ public class LoginFinal extends AppCompatActivity{
                     Paciente paciente = response.body();
                     ContentResolver rs = getContentResolver();
                     //si existe el paciente
-                    if(paciente != null){
+                    if (paciente != null) {
                         //verificar que el paciente ya exista en la bd, sino registrarlo
-                        boolean exis = verificarPacienteBD(paciente,rs);
+                        boolean exis = verificarPacienteBD(paciente, rs);
                         //si no existe;crearlo
-                        if(!exis) {
+                        if (!exis) {
                             //verificar si existe el cardiologo ya registrado
                             verificarRegistroMedico(paciente.cardiologo, rs);
                             //insertar paciente
@@ -110,8 +105,7 @@ public class LoginFinal extends AppCompatActivity{
                         }
 
                         Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(MainActivity.PARAM_CORREO,correo);
+                        intentHistorial.putExtra(MainActivity.PARAM_CORREO, correo);
                         startActivity(intentHistorial);
                         finish();
                     }
@@ -131,6 +125,7 @@ public class LoginFinal extends AppCompatActivity{
             Toast.makeText(LoginFinal.this, "Verifica tu conexión a internet", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private boolean verificarPacienteBD(Paciente p,ContentResolver rs){
         Uri uriPaciente = MonitorECGContrato.PacienteEntry.buildPacienteId(p.idPaciente);
@@ -256,7 +251,7 @@ public class LoginFinal extends AppCompatActivity{
             try
             {
                 // Get registration ID via Pushy
-                tokenPushy = Pushy.register(LoginFinal.this);
+                tokenPushy = me.pushy.sdk.Pushy.register(LoginFinal.this);
             }
             catch (PushyException exc)
             {
@@ -279,11 +274,12 @@ public class LoginFinal extends AppCompatActivity{
             {
                 return;
             }
-
+            loginPaciente();
             // Hide progress bar
             mLoading.dismiss();
 
         }
     }
+
 
 }
