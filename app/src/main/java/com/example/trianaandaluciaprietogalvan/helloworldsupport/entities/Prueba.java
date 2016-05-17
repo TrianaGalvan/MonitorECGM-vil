@@ -10,8 +10,8 @@ public class Prueba {
     public String fecha;
     public String hora;
     public String observaciones;
-    public String fechaEnvio;
-    public String horaEnvio;
+    public String muestracompleta;
+    public String muestraqrs;
     public Paciente paciente;
     public Reporte reporte;
     public Integer frecuenciaCardiaca;

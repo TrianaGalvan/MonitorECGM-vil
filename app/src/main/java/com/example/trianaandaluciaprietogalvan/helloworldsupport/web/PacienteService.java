@@ -15,13 +15,13 @@ import retrofit2.http.Path;
  */
 public interface PacienteService {
     @FormUrlEncoded
-    @POST("/paciente/login")
-    Call<Paciente> loginPaciente(@Field("correo") String correo,@Field("pass") String pass);
+    @POST("/ultimo/paciente/login")
+    Call<Paciente> loginPaciente(@Field("correo") String correo,@Field("pass") String pass,@Field("token")String token);
     @FormUrlEncoded
-    @POST("/paciente/verificarCorreo")
+    @POST("/ultimo/paciente/verificarCorreo")
     Call<Boolean> verificarCorreo(@Field("correo") String correo);
-    @POST("/paciente")
+    @POST("/ultimo/paciente")
     Call<Paciente> insertarPaciente(@Body Paciente paciente);
-    @PUT("/paciente/{id}")
+    @PUT("/ultimo/paciente/{id}")
     Call<String> actualizarPaciente(@Path("id") int idPaciente, @Body Paciente paciente);
 }

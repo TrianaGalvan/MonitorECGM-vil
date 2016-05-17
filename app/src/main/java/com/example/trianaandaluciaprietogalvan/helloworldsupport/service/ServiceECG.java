@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
@@ -18,6 +19,7 @@ import android.support.v7.app.NotificationCompat;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.FileUtilPrueba;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -29,12 +31,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.UUID;
 
 /**
  * Created by trianaandaluciaprietogalvan on 19/04/16.
  */
 public class ServiceECG extends Service {
+
+    public static final String PARAM_NAME_FILE = "nombreArchivo";
+    public static final String TIPO_HILO = "tipo-hilo";
 
     //PROYECCION PARA OBTENER EL DISPOSITIVO
     String[] PROYECCION_DISPOSITIVO = new String[]{
@@ -56,11 +62,17 @@ public class ServiceECG extends Service {
     private long startTime = 0;
     private long millis = 0;
     IntercambioDatos intercambio;
+    LeerArchivo leerArchivo;
     ConexionBT conexion;
     boolean estadoBt;
     boolean estadoConexion;
     int tipoVal;
+    //archivo de la prueba
+    File pruebaFile;
+    OutputStreamWriter fileOutput;
+    InputStream inputStream;
 
+    String ar;
 
     int indiceInicio = 0, indiceFinal = 0;
 
@@ -76,13 +88,27 @@ public class ServiceECG extends Service {
                 break;
             }
         }*/
+        Bundle bundle = intent.getExtras();
+        ar  = bundle.getString(PARAM_NAME_FILE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
-        } else {
-            intercambio = (IntercambioDatos) new IntercambioDatos().execute();
+        String tipoHilo = "";
+        tipoHilo = bundle.getString(TIPO_HILO);
+
+        if(tipoHilo.equals("ver")){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                leerArchivo = (LeerArchivo) new LeerArchivo().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                leerArchivo = (LeerArchivo) new LeerArchivo().execute();
+            }
+        }else{
+            //generar el archivo donde se guardara al muestra
+            fileOutput = FileUtilPrueba.generarArchivio(ar);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                intercambio = (IntercambioDatos) new IntercambioDatos().execute();
+            }
         }
-
 
         //Do what you need in onStartCommand when service has been started
         return START_NOT_STICKY;
@@ -109,13 +135,13 @@ public class ServiceECG extends Service {
         @Override
         protected void onPreExecute() {
             //DESCOMENTAR PARA USAR BLUETOOTH
-           try {
+            /*try {
                 is = btSocket.getInputStream();
                 os = btSocket.getOutputStream();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 //Toast.makeText(ServiceECG.this, "Error al obtener los streams", Toast.LENGTH_LONG).show();
-            }
+            }*/
         }
 
         @Override
@@ -124,9 +150,7 @@ public class ServiceECG extends Service {
             return null;
         }
 
-        public void leerBluetooth(){
-
-            Integer[] valores = new Integer[2];
+        public void leerBluetooth() {
             int n1, n2;
             int nBytes;
             // Read from the InputStream
@@ -146,35 +170,30 @@ public class ServiceECG extends Service {
 
                     aux1 = n1 & 64;
                     aux3 = n1 & 128;
-                    if(aux3 == 128){
-                        if(aux1 == 0)
-                        {
+                    if (aux3 == 128) {
+                        if (aux1 == 0) {
                             aux1 = n1 & 0x0F;
                             aux2 = n2 & 0x0F;
                             aux2 = aux2 << 4;
                             aux1 = aux1 | aux2;
-                        }
-                        else
-                        {
+                        } else {
                             aux1 = n1 & 0x0F;
                             aux2 = n2 & 0x0F;
                             aux1 = aux1 << 4;
                             aux1 = aux1 | aux2;
                         }
                         Thread.sleep(5);
-                        float frecuencia = (256.0f / (float)aux1) * 70.0f;
+                        float frecuencia = (256.0f / (float) aux1) * 70.0f;
+                        if (Float.isInfinite(frecuencia) || Float.isNaN(frecuencia))
+                            frecuencia = 0;
                         EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
-                    }else
-                    {
-                        if(aux1 == 0)
-                        {
+                    } else {
+                        if (aux1 == 0) {
                             aux1 = n1 & 0x3F;
                             aux2 = n2 & 0x3F;
                             aux2 = aux2 << 6;
                             aux1 = aux1 | aux2;
-                        }
-                        else
-                        {
+                        } else {
                             aux1 = n1 & 0x3F;
                             aux2 = n2 & 0x3F;
                             aux1 = aux1 << 6;
@@ -183,6 +202,8 @@ public class ServiceECG extends Service {
                         Thread.sleep(5);
                         publishProgress(aux1);
                     }
+                    fileOutput.write(Integer.toString(n1) + "\n");
+                    fileOutput.write(Integer.toString(n2) + "\n");
                 } catch (IOException e) {
                     break;
                 } catch (InterruptedException e) {
@@ -191,76 +212,68 @@ public class ServiceECG extends Service {
             }
         }
 
-        public void leerArchivo(){
+        public void leerArchivo() {
             Integer[] valores = new Integer[2];
             int aux1, aux2, aux3, aux4;
             int n1, n2;
             InputStream inputStream = null;
-            File file   = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            String files = file.getAbsolutePath()+"/muestra_300hz_16bits.txt";
+            File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+            String files = file.getAbsolutePath() + "/muestra_300hz_16bits.txt";
             String ruta = "/storage/emulated/0/Download/muestra_300hz_16bits.txt";
+
             try {
                 inputStream = new FileInputStream(new File(files));
-                if ( inputStream != null ) {
+                if(inputStream != null){
                     InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     String receiveString = "";
+                    String val2 = "";
                     StringBuilder stringBuilder = new StringBuilder();
 
-                    while ( (receiveString = bufferedReader.readLine()) != null ) {
-                        String val2 = bufferedReader.readLine();
+                    while ((receiveString = bufferedReader.readLine()) != null){
+                        val2 = bufferedReader.readLine();
                         if (isCancelled())
                             break;
-                            n1 = Integer.parseInt(receiveString);
-                            n2 = Integer.parseInt(val2);
-                            aux1 = n1 & 64;
-                            aux3 = n1 & 128;
+                        n1 = Integer.parseInt(receiveString);
+                        n2 = Integer.parseInt(val2);
+                        aux1 = n1 & 64;
+                        aux3 = n1 & 128;
 
-                            if(aux3 == 128){
-                                if(aux1 == 0)
-                                {
-                                    aux1 = n1 & 0x0F;
-                                    aux2 = n2 & 0x0F;
-                                    aux2 = aux2 << 4;
-                                    aux1 = aux1 | aux2;
-                                }
-                                else
-                                {
-                                    aux1 = n1 & 0x0F;
-                                    aux2 = n2 & 0x0F;
-                                    aux1 = aux1 << 4;
-                                    aux1 = aux1 | aux2;
-                                }
-                                Thread.sleep(5);
-                                float frecuencia;
-                                if(aux1 != 0){
-                                    frecuencia = (256.0f / (float)aux1) * 70.0f;
-                                }else{
-                                    frecuencia = 0;
-                                }
-                                EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
-                            }else
-                            {
-                                if(aux1 == 0)
-                                {
-                                    aux1 = n1 & 0x3F;
-                                    aux2 = n2 & 0x3F;
-                                    aux2 = aux2 << 6;
-                                    aux1 = aux1 | aux2;
-                                }
-                                else
-                                {
-                                    aux1 = n1 & 0x3F;
-                                    aux2 = n2 & 0x3F;
-                                    aux1 = aux1 << 6;
-                                    aux1 = aux1 | aux2;
-                                }
-                                Thread.sleep(5);
-                                publishProgress(aux1);
+                        if (aux3 == 128) {
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x0F;
+                                aux2 = n2 & 0x0F;
+                                aux2 = aux2 << 4;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x0F;
+                                aux2 = n2 & 0x0F;
+                                aux1 = aux1 << 4;
+                                aux1 = aux1 | aux2;
                             }
-
+                            Thread.sleep(5);
+                            float frecuencia = (256.0f / (float) aux1) * 70.0f;
+                            if (Float.isInfinite(frecuencia) || Float.isNaN(frecuencia))
+                                frecuencia = 0;
+                            EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
+                        } else {
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux2 = aux2 << 6;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux1 = aux1 << 6;
+                                aux1 = aux1 | aux2;
+                            }
+                            Thread.sleep(5);
+                            publishProgress(aux1);
+                        }
+                        fileOutput.write(Integer.toString(n1) + "\n");
+                        fileOutput.write(Integer.toString(n2) + "\n");
                     }
-
                     inputStream.close();
                 }
             } catch (FileNotFoundException e) {
@@ -281,9 +294,12 @@ public class ServiceECG extends Service {
         @Override
         protected void onCancelled(Void aVoid) {
             //USAR PARA EL BLUETHOOT
-           /* try {
+            /*try {
                 os.write(0);
                 indiceInicio = 0;
+                os.close();
+                is.close();
+                //cerrar el archivo
             } catch (IOException ioe) {
                 ioe.printStackTrace();
                 //Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
@@ -292,8 +308,7 @@ public class ServiceECG extends Service {
     }
 
 
-
-    private class ConexionBT extends AsyncTask<Void, Void, Void> {
+    private class ConexionBT extends AsyncTask<Bundle, Void, Void> {
 
         public ConexionBT() {
             estadoConexion = false;
@@ -305,7 +320,7 @@ public class ServiceECG extends Service {
         }
 
         @Override
-        protected Void doInBackground(Void... dispositivos) {
+        protected Void doInBackground(Bundle... dispositivos) {
             try {
                 if (btSocket == null || !estadoBt) {
                     bluetooth = BluetoothAdapter.getDefaultAdapter();
@@ -337,7 +352,7 @@ public class ServiceECG extends Service {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             if (!estadoConexion) {
-               // Toast.makeText(ServiceECG.this, "Error de conexión, vuelva a intentarlo", Toast.LENGTH_LONG).show();
+                // Toast.makeText(ServiceECG.this, "Error de conexión, vuelva a intentarlo", Toast.LENGTH_LONG).show();
             } else {
                 //Toast.makeText(ServiceECG.this, "Conexion establecida", Toast.LENGTH_LONG).show();
                 estadoBt = true;
@@ -347,10 +362,125 @@ public class ServiceECG extends Service {
 
     }
 
+    public class LeerArchivo extends AsyncTask<Void, Integer, Void> {
+        InputStream inputStreamLeer;
+        public LeerArchivo(){
+            inputStreamLeer = null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            File pruebaFile = new File(Environment.getExternalStorageDirectory(),ar);
+            try {
+                inputStreamLeer = new FileInputStream(pruebaFile);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            leerArchivo();
+            return null;
+        }
+
+
+
+        public void leerArchivo() {
+            int aux1, aux2, aux3, aux4;
+            int n1, n2;
+            try {
+                if(inputStreamLeer != null){
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStreamLeer);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String receiveString = "";
+                    String val2 = "";
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while ((receiveString = bufferedReader.readLine()) != null){
+                        val2 = bufferedReader.readLine();
+                        if (isCancelled())
+                            break;
+                        n1 = Integer.parseInt(receiveString);
+                        n2 = Integer.parseInt(val2);
+                        aux1 = n1 & 64;
+                        aux3 = n1 & 128;
+
+                        if (aux3 == 128) {
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x0F;
+                                aux2 = n2 & 0x0F;
+                                aux2 = aux2 << 4;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x0F;
+                                aux2 = n2 & 0x0F;
+                                aux1 = aux1 << 4;
+                                aux1 = aux1 | aux2;
+                            }
+                            Thread.sleep(5);
+                            float frecuencia = (256.0f / (float) aux1) * 70.0f;
+                            if (Float.isInfinite(frecuencia) || Float.isNaN(frecuencia))
+                                frecuencia = 0;
+                            EventBus.getDefault().post(new ColocarFrecuenciaEvent(frecuencia));
+                        } else {
+                            if (aux1 == 0) {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux2 = aux2 << 6;
+                                aux1 = aux1 | aux2;
+                            } else {
+                                aux1 = n1 & 0x3F;
+                                aux2 = n2 & 0x3F;
+                                aux1 = aux1 << 6;
+                                aux1 = aux1 | aux2;
+                            }
+                            Thread.sleep(5);
+                            publishProgress(aux1);
+                        }
+                    }
+                    inputStreamLeer.close();
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Integer valor = values[0];
+            EventBus.getDefault().post(new GraficarValorEvent(valor));
+        }
+
+        @Override
+        protected void onCancelled(Void aVoid) {
+            try {
+                inputStreamLeer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void onDestroy() {
-        intercambio.cancel(true);
-        intercambio = null;
+        if(intercambio != null){
+            intercambio.cancel(true);
+            intercambio = null;
+            try {
+                fileOutput.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            leerArchivo.cancel(true);
+            leerArchivo = null;
+        }
+        inputStream = null;
     }
 }
 

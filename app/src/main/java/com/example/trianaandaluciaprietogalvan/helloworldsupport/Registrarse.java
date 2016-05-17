@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -43,13 +44,20 @@ public class Registrarse extends AppCompatActivity {
     EditText edad;
     @Bind(R.id.txtContrasena)
     EditText pass;
+    @Bind(R.id.txtCurp)
+    EditText curp;
     @Bind(R.id.txtConfirmarContrasena)
     EditText confPass;
+    @Bind(R.id.radioSex)
+    RadioGroup sexo;
+    @Bind(R.id.txtTelefono)
+    EditText telefono;
+
 
     @OnTextChanged(R.id.txtNombre) void onNombreChange(CharSequence text) {
         nombre.setError(null);
     }@OnTextChanged(value = R.id.txtNombre, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED) void onAfterNombreChange(CharSequence text) {
-        String pattern= "^[a-zA-Z]*$";
+        String pattern= "^[a-zA-Z ]*$";
         if(!nombre.getText().toString().matches(pattern)){
             nombre.setError("Sólo se aceptan caractéres");
         }
@@ -114,22 +122,17 @@ public class Registrarse extends AppCompatActivity {
                             toast.show();
                         } else {
                             Bundle bundle = new Bundle();
-                            TextView nombre = (TextView) findViewById(R.id.txtNombre);
+
                             bundle.putString(RegistrarDatosMedicos.PARAM_NOMBRE, nombre.getText().toString());
 
-                            TextView app = (TextView) findViewById(R.id.txtApp);
                             bundle.putString(RegistrarDatosMedicos.PARAM_APP, app.getText().toString());
 
-                            TextView apm = (TextView) findViewById(R.id.txtApm);
                             bundle.putString(RegistrarDatosMedicos.PARAM_APM, apm.getText().toString());
 
-                            TextView curp = (TextView) findViewById(R.id.txtCurp);
                             bundle.putString(RegistrarDatosMedicos.PARAM_CURP, curp.getText().toString());
 
-                            TextView edad = (TextView) findViewById(R.id.txtEdad);
                             bundle.putString(RegistrarDatosMedicos.PARAM_EDAD, edad.getText().toString());
 
-                            RadioGroup sexo = (RadioGroup) findViewById(R.id.radioSex);
                             int idSexo = sexo.getCheckedRadioButtonId();
                             RadioButton sexoButton = (RadioButton) findViewById(idSexo);
                             if (sexoButton != null) {
@@ -138,14 +141,12 @@ public class Registrarse extends AppCompatActivity {
                                 bundle.putString(RegistrarDatosMedicos.PARAM_SEXO, "");
                             }
 
-                            TextView telefono = (TextView) findViewById(R.id.txtTelefono);
                             bundle.putString(RegistrarDatosMedicos.PARAM_TELEFONO, telefono.getText().toString());
 
                             bundle.putString(RegistrarDatosMedicos.PARAM_CORREO, sCorreos);
 
                             //contrasena
-                            TextView con = (TextView) findViewById(R.id.txtContrasena);
-                            bundle.putString(RegistrarDatosMedicos.PARAM_CONTRASENA, con.getText().toString());
+                            bundle.putString(RegistrarDatosMedicos.PARAM_CONTRASENA, pass.getText().toString());
 
                             Intent intentDatosMedicos = new Intent(getBaseContext(), RegistrarDatosMedicos.class);
                             intentDatosMedicos.putExtras(bundle);
@@ -160,7 +161,7 @@ public class Registrarse extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<Boolean> call, Throwable t) {
-
+                    Log.e("Registrarse","Error al verificar correo");
                 }
             });
         }

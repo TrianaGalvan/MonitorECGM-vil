@@ -3,10 +3,12 @@ package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,6 +26,8 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.NetworkUt
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.PacienteDAO;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.web.ServicioWeb;
 
+import me.pushy.sdk.Pushy;
+import me.pushy.sdk.exceptions.PushyException;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +36,7 @@ public class LoginFinal extends AppCompatActivity{
 
     private static final String LOG_TAG = LoginFinal.class.getSimpleName();
     private AccountAuthenticatorResponse accountAuthenticatorResponse;
+    String tokenPushy = "";
 
 
     @Override
@@ -53,7 +58,17 @@ public class LoginFinal extends AppCompatActivity{
     }
 
     public void onClickEntrarAplicacion(View view) {
-        //obtener los datos del form
+         /* --------- PUSHY NOTIFICATIONS --------*/
+        // Restart the socket service, in case the user force-closed
+        Pushy.listen(this);
+
+        // Register up for push notifications (will return existing token if already registered before)
+        new RegisterForPushNotifications().execute();
+        /* --------------------------------------*/
+
+    }
+
+    private void loginPaciente() {
         TextView correoTxt= (TextView) findViewById(R.id.txtCorreo);
         TextView contrasenaTxt = (TextView) findViewById(R.id.txtContraseña);
         final String correo = correoTxt.getText().toString();
@@ -61,17 +76,17 @@ public class LoginFinal extends AppCompatActivity{
 
         //verificar conexion de red
         if(NetworkUtil.isOnline(this)){
-            ServicioWeb.loginPaciente(correo, pass, new Callback<Paciente>() {
+            ServicioWeb.loginPaciente(correo, pass, tokenPushy, new Callback<Paciente>() {
                 @Override
                 public void onResponse(Call<Paciente> call, Response<Paciente> response) {
                     Paciente paciente = response.body();
                     ContentResolver rs = getContentResolver();
                     //si existe el paciente
-                    if(paciente != null){
+                    if (paciente != null) {
                         //verificar que el paciente ya exista en la bd, sino registrarlo
-                        boolean exis = verificarPacienteBD(paciente,rs);
+                        boolean exis = verificarPacienteBD(paciente, rs);
                         //si no existe;crearlo
-                        if(!exis) {
+                        if (!exis) {
                             //verificar si existe el cardiologo ya registrado
                             verificarRegistroMedico(paciente.cardiologo, rs);
                             //insertar paciente
@@ -90,6 +105,7 @@ public class LoginFinal extends AppCompatActivity{
                         }
 
                         Intent intentHistorial = new Intent(LoginFinal.this, MainActivity.class);
+                        intentHistorial.putExtra(MainActivity.PARAM_CORREO, correo);
                         startActivity(intentHistorial);
                         finish();
                     }
@@ -109,6 +125,7 @@ public class LoginFinal extends AppCompatActivity{
             Toast.makeText(LoginFinal.this, "Verifica tu conexión a internet", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private boolean verificarPacienteBD(Paciente p,ContentResolver rs){
         Uri uriPaciente = MonitorECGContrato.PacienteEntry.buildPacienteId(p.idPaciente);
@@ -209,5 +226,60 @@ public class LoginFinal extends AppCompatActivity{
             Toast.makeText(this,"Verifica tu conexión a internet",Toast.LENGTH_SHORT).show();
         }
     }
+
+    private class RegisterForPushNotifications extends AsyncTask<String, Void, String>
+    {
+        ProgressDialog mLoading;
+
+        public RegisterForPushNotifications()
+        {
+            // Create progress dialog and set it up
+            mLoading = new ProgressDialog(LoginFinal.this);
+            mLoading.setMessage(getString(R.string.loading));
+            mLoading.setCancelable(false);
+
+            // Show it
+            mLoading.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params)
+        {
+            // Temporary string that will hold the registration result
+            String result;
+
+            try
+            {
+                // Get registration ID via Pushy
+                tokenPushy = me.pushy.sdk.Pushy.register(LoginFinal.this);
+            }
+            catch (PushyException exc)
+            {
+                // Show error instead
+                result = exc.getMessage();
+            }
+
+            // Write to log
+            Log.d("Pushy", "Registration result: " + tokenPushy);
+
+            // Return result
+            return tokenPushy;
+        }
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            // Activity died?
+            if ( isFinishing() )
+            {
+                return;
+            }
+            loginPaciente();
+            // Hide progress bar
+            mLoading.dismiss();
+
+        }
+    }
+
 
 }

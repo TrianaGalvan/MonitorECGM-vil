@@ -162,7 +162,12 @@ public class MonitorECGContentProvider extends ContentProvider {
             }
 
             case PRUEBA: {
-                long _id = db.insert(PruebaEntry.TABLE_NAME, null, values);
+                long _id = 0;
+                try{
+                    _id = db.insert(PruebaEntry.TABLE_NAME, null, values);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 if ( _id > 0 )
                     returnUri = PruebaEntry.buildPruebaId((int) _id);
                 else
@@ -299,18 +304,29 @@ public class MonitorECGContentProvider extends ContentProvider {
     private Cursor getPrueba(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        String join_prueba_reporte = PruebaEntry.TABLE_NAME + " INNER JOIN "+
-                                    ReporteEntry.TABLE_NAME+" ON "+
-                                    PruebaEntry.TABLE_NAME +"."+PruebaEntry.COLUMN_REPORTE_ID_REPORTE+" = "+
-                                    ReporteEntry.TABLE_NAME+"."+ReporteEntry._ID;
+        if(selection != null && selection.contains("actualizar")){
+            return db.query(PruebaEntry.TABLE_NAME,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    sortOrder);
+        }else{
+            String join_prueba_reporte = PruebaEntry.TABLE_NAME + " INNER JOIN "+
+                    ReporteEntry.TABLE_NAME+" ON "+
+                    PruebaEntry.TABLE_NAME +"."+PruebaEntry.COLUMN_REPORTE_ID_REPORTE+" = "+
+                    ReporteEntry.TABLE_NAME+"."+ReporteEntry._ID;
 
-        return db.query(join_prueba_reporte,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder);
+            return db.query(join_prueba_reporte,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    sortOrder);
+        }
+
     }
 
     private Cursor getPruebaById(Uri uri, String[] projection, String sortOrder) {

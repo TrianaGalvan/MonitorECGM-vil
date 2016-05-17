@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.trianaandaluciaprietogalvan.helloworldsupport">
 
+    <!-- Pushy Permissions -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Added in Pushy SDK v1.0.0 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
@@ -29,6 +37,7 @@
         <activity
             android:name=".Registrarse"
             android:label="@string/title_activity_registrarse"
+            android:launchMode="singleTop"
             android:parentActivityName=".LoginFinal"
             android:theme="@style/ThemeRegistrarse" />
         <activity
@@ -115,8 +124,42 @@
         <activity android:name=".EnviarECG"
                   android:label="Enviar electrocardiograma"
                   android:theme="@style/ThemeDetallePrueba"
-                  android:parentActivityName=".Electrocardiograma"
+                  android:parentActivityName=".MainActivity"
             ></activity>
+        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
+             App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <!-- Pushy Declarations -->
+
+        <!-- Pushy Notification Receiver -->
+        <!-- Incoming pushes will be redirected to the following BroadcastReceiver class -->
+        <receiver android:name=".pushy.PushReceiver" >
+            <intent-filter>
+                <!-- Do not modify this -->
+                <action android:name="pushy.me" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Pushy Update Receiver -->
+        <!-- Do not modify - internal BroadcastReceiver that restarts the listener service -->
+        <receiver android:name="me.pushy.sdk.receivers.PushyUpdateReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Pushy Socket Service -->
+        <!-- Do not modify - internal socket background service -->
+        <service android:name="me.pushy.sdk.services.PushySocketService"/>
+
+        <!-- End Pushy Declarations -->
     </application>
+
+
+
 
 </manifest>
