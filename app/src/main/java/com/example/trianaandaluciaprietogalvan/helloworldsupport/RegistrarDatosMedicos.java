@@ -157,13 +157,15 @@ public class RegistrarDatosMedicos extends AppCompatActivity implements Callback
                     //insertar en la base de datos
                     //verificar si ya existe el cardiologo registrado en la bd
                     verificarRegistroMedico(car,rs);
-
                     Paciente p = response.body();
-                    PacienteDAO.insertarPaciente(p, rs);
-
-                    Toast.makeText(RegistrarDatosMedicos.this, "Fuiste registrado con éxito", Toast.LENGTH_SHORT).show();
-                    setResult(Activity.RESULT_OK);
-                    finish();
+                    if(p == null){
+                        Toast.makeText(getBaseContext(),"Ocurrió un error en el servidor",Toast.LENGTH_SHORT).show();
+                    }else{
+                        PacienteDAO.insertarPaciente(p, rs);
+                        Toast.makeText(RegistrarDatosMedicos.this, "Fuiste registrado con éxito", Toast.LENGTH_SHORT).show();
+                        setResult(Activity.RESULT_OK);
+                        finish();
+                    }
                 }
                 else{
                     Toast.makeText(RegistrarDatosMedicos.this, "Ocurrió  un error en el sistema", Toast.LENGTH_SHORT).show();
