@@ -29,6 +29,7 @@
     <string name="empezar_ecg">Empezar</string>
     <string name="detener_ecg">Detener</string>
     <string name="guardar">Guardar</string>
+    <string name="capturar">Capturar</string>
 
     <string name="recuperar_contrasena_texto">Se enviará un correo a tu correo electrónico registrado para recuperar tu contraseña</string>
 
