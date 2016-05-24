@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.CapturarMessage;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.Comando1Message;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ErroEnlazadoECG;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ProgressDialogGraficaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ServiceECGErrorsEvent;
@@ -101,7 +103,7 @@ public class Grafica extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
         super.onStop();
     }
-
+    // ---------------------------------- SUSCRIBERS -----------------------------
     @Subscribe
     public void onEventoGraficar(GraficarValorEvent event) {
         LineData data = grafica.getData();
@@ -140,6 +142,19 @@ public class Grafica extends AppCompatActivity {
             progreso.setTitle(event.messageTittle);
             progreso.show();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void errorEnlazarECG(ErroEnlazadoECG event){
+        Toast.makeText(this,event.mensajeEnlazar,Toast.LENGTH_SHORT).show();
+        stopService(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void errorComando1(Comando1Message event){
+        Toast.makeText(this,event.mensajeComando1,Toast.LENGTH_SHORT).show();
+        empezar.setVisibility(View.VISIBLE);
+        stopService(intent);
     }
 
     @Subscribe(threadMode =  ThreadMode.MAIN)
