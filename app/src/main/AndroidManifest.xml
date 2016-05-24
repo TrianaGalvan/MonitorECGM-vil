@@ -158,6 +158,9 @@
         <service android:name="me.pushy.sdk.services.PushySocketService"/>
 
         <!-- End Pushy Declarations -->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="fcd4d1d74a202f7ddb4bee7ce2acf1e738ba982b" />
     </application>
 
 
