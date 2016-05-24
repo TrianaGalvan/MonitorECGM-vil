@@ -18,13 +18,13 @@ import retrofit2.http.Query;
  * Created by trianaandaluciaprietogalvan on 10/04/16.
  */
 public interface PruebaService {
-    @GET("/ultimo/prueba/correo")
+    @GET("/prueba/correo")
     Call<List<Prueba>> obtenerPruebas(@Query("email") String email);
 
     @Multipart
-    @POST("/ultimo/prueba")
+    @POST("/prueba")
     Call<Prueba> generarPrueba(@Part MultipartBody.Part archivo,@Part("prueba") String prueba);
 
-    @GET("/ultimo/prueba/electrocardiograma/{id}")
+    @GET("/prueba/electrocardiograma/{id}")
     Call<ResponseBody> descargarPrueba(@Path("id") int id);
 }

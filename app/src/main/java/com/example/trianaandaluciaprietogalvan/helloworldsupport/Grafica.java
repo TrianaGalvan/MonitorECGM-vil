@@ -1,5 +1,6 @@
 package com.example.trianaandaluciaprietogalvan.helloworldsupport;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,8 +13,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.CapturarMessage;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.Comando1Message;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ErroEnlazadoECG;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ProgressDialogGraficaEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ServiceECGErrorsEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.service.ServiceECG;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.FileUtilPrueba;
 import com.github.mikephil.charting.charts.LineChart;
@@ -45,11 +51,14 @@ public class Grafica extends AppCompatActivity {
     Button detener;
     @Bind(R.id.buttonEmpezar)
     Button empezar;
+    @Bind(R.id.buttonCapturar)
+    Button capturar;
     @Bind(R.id.txtFrecuencia)
     TextView frecuencia;
 
     String valParamService = "";
     String frecuenciaCardiaca = "";
+    ProgressDialog progreso;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +85,9 @@ public class Grafica extends AppCompatActivity {
                 NOMBRE_ARCHIVO_PRUEBA = bundle.getString(PARAM_NAME_FILE);
                 frecuencia.setText(frecuenciaCardiaca+" Ipm");
                 empezar.setVisibility(View.INVISIBLE);
+                capturar.setVisibility(View.INVISIBLE);
                 detener.setText("Salir");
-                startService();
+                startService("Ver");
             }
         }
     }
@@ -93,7 +103,7 @@ public class Grafica extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
         super.onStop();
     }
-
+    // ---------------------------------- SUSCRIBERS -----------------------------
     @Subscribe
     public void onEventoGraficar(GraficarValorEvent event) {
         LineData data = grafica.getData();
@@ -123,6 +133,36 @@ public class Grafica extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void startProgressDialog(ProgressDialogGraficaEvent event){
+        if(event.message.isEmpty()){
+            progreso.dismiss();
+        }else{
+            progreso = new ProgressDialog(Grafica.this);
+            progreso.setMessage(event.message);
+            progreso.setTitle(event.messageTittle);
+            progreso.show();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void errorEnlazarECG(ErroEnlazadoECG event){
+        Toast.makeText(this,event.mensajeEnlazar,Toast.LENGTH_SHORT).show();
+        stopService(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void errorComando1(Comando1Message event){
+        Toast.makeText(this,event.mensajeComando1,Toast.LENGTH_SHORT).show();
+        empezar.setVisibility(View.VISIBLE);
+        stopService(intent);
+    }
+
+    @Subscribe(threadMode =  ThreadMode.MAIN)
+    public void mostrarMsjError(ServiceECGErrorsEvent event){
+        Toast.makeText(getBaseContext(), event.error, Toast.LENGTH_LONG).show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onColocarFrecuencia(ColocarFrecuenciaEvent event){
         float f = event.frecuencia;
         String frec = String.format("%.2f",f);
@@ -130,18 +170,18 @@ public class Grafica extends AppCompatActivity {
     }
 
     // Method to start the service
-    public void startService() {
+    public void startService(String tipoBoton) {
+        if(tipoBoton.equals("Empezar")){
+            NOMBRE_ARCHIVO_PRUEBA = FileUtilPrueba.generarNombreArch(getBaseContext());
+        }
         //Crear el arcivo donde se va  a guardar la prueba
         intent = new Intent(getBaseContext(), ServiceECG.class);
         Bundle bundle = new Bundle();
-        if(!valParamService.equals("ver")){
-            NOMBRE_ARCHIVO_PRUEBA = FileUtilPrueba.generarNombreArch(getBaseContext());
-        }
+        //obtener la conexión con el bluethoot
         bundle.putString(ServiceECG.PARAM_NAME_FILE,NOMBRE_ARCHIVO_PRUEBA);
-        bundle.putString(ServiceECG.TIPO_HILO,valParamService);
+        bundle.putString(ServiceECG.TIPO_HILO,tipoBoton);
         intent.putExtras(bundle);
         startService(intent);
-
     }
 
 
@@ -174,7 +214,7 @@ public class Grafica extends AppCompatActivity {
                         Intent intent = new Intent(getBaseContext(), EnviarECG.class);
                         Bundle bundle = new Bundle();
                         bundle.putString(EnviarECG.PARAM_FREC,frecuencia.getText().toString());
-                        bundle.putString(EnviarECG.PARAM_NOMBRE_ARCHIVO,NOMBRE_ARCHIVO_PRUEBA);
+                        bundle.putString(EnviarECG.PARAM_NOMBRE_ARCHIVO, NOMBRE_ARCHIVO_PRUEBA);
                         intent.putExtras(bundle);
                         startActivity(intent);
                     }
@@ -195,9 +235,11 @@ public class Grafica extends AppCompatActivity {
 
 
     public void startService(View view) {
-        empezar.setEnabled(false);
-        startService();
-        Toast.makeText(this, "presionado" +
-                "", Toast.LENGTH_SHORT).show();
+        empezar.setVisibility(View.INVISIBLE);
+        startService("Empezar");
+    }
+
+    public void startServiceCapturar(View view) {
+        EventBus.getDefault().post(new CapturarMessage(true));
     }
 }

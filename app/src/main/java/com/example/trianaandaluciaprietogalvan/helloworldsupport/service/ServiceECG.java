@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -15,13 +16,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECGContrato;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.CapturarMessage;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.Comando1Message;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ErroEnlazadoECG;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ProgressDialogGraficaEvent;
+import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ServiceECGErrorsEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.utils.FileUtilPrueba;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,6 +49,7 @@ public class ServiceECG extends Service {
 
     public static final String PARAM_NAME_FILE = "nombreArchivo";
     public static final String TIPO_HILO = "tipo-hilo";
+    Context context = getBaseContext();
 
     //PROYECCION PARA OBTENER EL DISPOSITIVO
     String[] PROYECCION_DISPOSITIVO = new String[]{
@@ -54,7 +63,7 @@ public class ServiceECG extends Service {
 
     public static final String CONSTAT_ACTUALIZAR_UI = "MyServiceUpdate";
     ProgressDialog progreso;
-    BluetoothSocket btSocket;
+    BluetoothSocket btSocket=null;
     BluetoothAdapter bluetooth;
 
     NotificationManager notificationManager;
@@ -66,6 +75,7 @@ public class ServiceECG extends Service {
     ConexionBT conexion;
     boolean estadoBt;
     boolean estadoConexion;
+    boolean banderaCapturar = false;
     int tipoVal;
     //archivo de la prueba
     File pruebaFile;
@@ -76,41 +86,35 @@ public class ServiceECG extends Service {
 
     int indiceInicio = 0, indiceFinal = 0;
 
+    @Subscribe
+    public void onCapturarPrueba(CapturarMessage event){
+        fileOutput = FileUtilPrueba.generarArchivio(ar);
+        banderaCapturar = event.bandera;
+        EventBus.getDefault().post(new ServiceECGErrorsEvent("Capturando muestra"));
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        //iniciar la conexion con el bluethoot
+        //Registrar el event bus
+        EventBus.getDefault().register(this);
 
-        //DESCOMENTAR PARA PROBAR CON BLUETOOTH
-        /*conexion = (ConexionBT) new ConexionBT().execute();
-        //esperar a que se inicie la conexion con el bluethoot
-        while (true) {
-            if (estadoConexion) {
-                break;
-            }
-        }*/
         Bundle bundle = intent.getExtras();
         ar  = bundle.getString(PARAM_NAME_FILE);
 
         String tipoHilo = "";
         tipoHilo = bundle.getString(TIPO_HILO);
 
-        if(tipoHilo.equals("ver")){
+        if(tipoHilo.equals("Ver")){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 leerArchivo = (LeerArchivo) new LeerArchivo().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
                 leerArchivo = (LeerArchivo) new LeerArchivo().execute();
             }
-        }else{
-            //generar el archivo donde se guardara al muestra
-            fileOutput = FileUtilPrueba.generarArchivio(ar);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                intercambio = (IntercambioDatos) new IntercambioDatos().execute();
-            }
+        }
+        else{
+            conexion = (ConexionBT) new ConexionBT().execute();
         }
 
-        //Do what you need in onStartCommand when service has been started
         return START_NOT_STICKY;
     }
 
@@ -135,18 +139,18 @@ public class ServiceECG extends Service {
         @Override
         protected void onPreExecute() {
             //DESCOMENTAR PARA USAR BLUETOOTH
-            /*try {
+            try {
                 is = btSocket.getInputStream();
                 os = btSocket.getOutputStream();
             } catch (IOException ioe) {
                 ioe.printStackTrace();
-                //Toast.makeText(ServiceECG.this, "Error al obtener los streams", Toast.LENGTH_LONG).show();
-            }*/
+                EventBus.getDefault().post(new Comando1Message("Error al obtener los streams"));
+            }
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            leerArchivo();
+            leerBluetooth();
             return null;
         }
 
@@ -158,7 +162,7 @@ public class ServiceECG extends Service {
                 os.write(1);
             } catch (IOException e) {
                 e.printStackTrace();
-                //Toast.makeText(ServiceECG.this, "No se envio el comando 1", Toast.LENGTH_LONG).show();
+                EventBus.getDefault().post(new Comando1Message("No se envió el comando 1"));
             }
             while (true) {
                 if (isCancelled())
@@ -201,9 +205,10 @@ public class ServiceECG extends Service {
                         }
                         Thread.sleep(5);
                         publishProgress(aux1);
+                        if(banderaCapturar){
+                            fileOutput.write(Integer.toString(aux1) + "\n");
+                        }
                     }
-                    fileOutput.write(Integer.toString(n1) + "\n");
-                    fileOutput.write(Integer.toString(n2) + "\n");
                 } catch (IOException e) {
                     break;
                 } catch (InterruptedException e) {
@@ -270,9 +275,11 @@ public class ServiceECG extends Service {
                             }
                             Thread.sleep(5);
                             publishProgress(aux1);
+                            if(banderaCapturar){
+                                fileOutput.write(Integer.toString(aux1) + "\n");
+                                Log.i("Service ECG","------------- GENERANDO ARCHIVO ---------------");
+                            }
                         }
-                        fileOutput.write(Integer.toString(n1) + "\n");
-                        fileOutput.write(Integer.toString(n2) + "\n");
                     }
                     inputStream.close();
                 }
@@ -293,20 +300,20 @@ public class ServiceECG extends Service {
 
         @Override
         protected void onCancelled(Void aVoid) {
-            //USAR PARA EL BLUETHOOT
-            /*try {
-                os.write(0);
-                indiceInicio = 0;
-                os.close();
-                is.close();
-                //cerrar el archivo
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-                //Toast.makeText(ServiceECG.this, "No se enio el comando 0", Toast.LENGTH_LONG).show();
-            }*/
+            indiceInicio = 0;
+            try {
+                if(is != null && os != null){
+                    is.close();
+                    os.close();
+                }else if(btSocket != null){
+                    btSocket.close();
+                    btSocket = null;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 
     private class ConexionBT extends AsyncTask<Bundle, Void, Void> {
 
@@ -316,7 +323,7 @@ public class ServiceECG extends Service {
 
         @Override
         protected void onPreExecute() {
-            //progreso = ProgressDialog.show(ServiceECG.this, "Connectando...", "Por favor espere...");
+            EventBus.getDefault().post(new ProgressDialogGraficaEvent("Conectando...","Por favor espere..."));
         }
 
         @Override
@@ -326,40 +333,59 @@ public class ServiceECG extends Service {
                     bluetooth = BluetoothAdapter.getDefaultAdapter();
                     //obtener el dispositivo a enlazar
                     ContentResolver rs = getContentResolver();
-
                     Cursor cursor = rs.query(MonitorECGContrato.DispositivoEntry.CONTENT_URI, PROYECCION_DISPOSITIVO, null, null, null);
                     if (cursor != null) {
-                        cursor.moveToFirst();
-                        String nombreDispositivo = cursor.getString(COLUMN_NOMBRE_DISP);
-                        String direccion = nombreDispositivo.substring((nombreDispositivo.length() - 17));
-                        BluetoothDevice dispositivo = bluetooth.getRemoteDevice(direccion);
-                        btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(miUUID);
-                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-                        btSocket.connect();
-                    } else {
-                        //Toast.makeText(getBaseContext(), "El dispositivo no se encuentra enlazado con algún monitor ecg", Toast.LENGTH_LONG).show();
+                        if(cursor.getCount() != 0){
+                            cursor.moveToFirst();
+                            String nombreDispositivo = cursor.getString(COLUMN_NOMBRE_DISP);
+                            String direccion = nombreDispositivo.substring((nombreDispositivo.length() - 17));
+                            BluetoothDevice dispositivo = bluetooth.getRemoteDevice(direccion);
+                            btSocket = dispositivo.createInsecureRfcommSocketToServiceRecord(miUUID);
+                            BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+                            btSocket.connect();
+                        }else {
+                            EventBus.getDefault().post(new ErroEnlazadoECG("El dispositivo no se encuentra enlazado con algún monitor ecg"));
+                        }
                     }
-
                 }
             } catch (IOException ioe) {
                 estadoConexion = false;
             }
             estadoConexion = true;
-            return null;
+            return  null;
+
         }
 
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+            //Progress dismiss
+            EventBus.getDefault().post(new ProgressDialogGraficaEvent("", ""));
             if (!estadoConexion) {
-                // Toast.makeText(ServiceECG.this, "Error de conexión, vuelva a intentarlo", Toast.LENGTH_LONG).show();
+                EventBus.getDefault().post(new Comando1Message("Error de conexión, vuelva a intentarlo"));
             } else {
-                //Toast.makeText(ServiceECG.this, "Conexion establecida", Toast.LENGTH_LONG).show();
+                EventBus.getDefault().post(new ServiceECGErrorsEvent("Conexion establecida"));
                 estadoBt = true;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                } else {
+                    intercambio = (IntercambioDatos) new IntercambioDatos().execute();
+                }
             }
-            //progreso.dismiss();
         }
 
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            try {
+                if(btSocket != null){
+                    btSocket.close();
+                    btSocket = null;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public class LeerArchivo extends AsyncTask<Void, Integer, Void> {
@@ -383,8 +409,6 @@ public class ServiceECG extends Service {
             leerArchivo();
             return null;
         }
-
-
 
         public void leerArchivo() {
             int aux1, aux2, aux3, aux4;
@@ -437,12 +461,22 @@ public class ServiceECG extends Service {
         if(intercambio != null){
             intercambio.cancel(true);
             intercambio = null;
+            banderaCapturar = false;
             try {
-                fileOutput.close();
+                if(fileOutput != null){
+                    fileOutput.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }else{
+        }else if(conexion != null){
+            try{
+                conexion.cancel(true);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        else if(leerArchivo != null){
             leerArchivo.cancel(true);
             leerArchivo = null;
         }

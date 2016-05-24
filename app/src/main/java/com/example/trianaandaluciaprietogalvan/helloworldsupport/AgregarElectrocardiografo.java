@@ -79,12 +79,11 @@ public class AgregarElectrocardiografo extends AppCompatActivity {
                     if(c.getCount() != 0){
                         //elimianr los registros
                         int rowsdelete = rs.delete(MonitorECGContrato.DispositivoEntry.CONTENT_URI,null,null);
-                    }else{
-                        ContentValues cv = new ContentValues();
-                        cv.put(MonitorECGContrato.DispositivoEntry.COLUMN_NOMBRE,dispositivo);
-                        rs.insert(MonitorECGContrato.DispositivoEntry.CONTENT_URI, cv);
-                        Toast.makeText(getBaseContext(),"Se guardo el nombre del ECG",Toast.LENGTH_SHORT).show();
                     }
+                    ContentValues cv = new ContentValues();
+                    cv.put(MonitorECGContrato.DispositivoEntry.COLUMN_NOMBRE,dispositivo);
+                    rs.insert(MonitorECGContrato.DispositivoEntry.CONTENT_URI, cv);
+                    Toast.makeText(getBaseContext(),"Se guardo el nombre del ECG",Toast.LENGTH_SHORT).show();
                 }
             }
         });
