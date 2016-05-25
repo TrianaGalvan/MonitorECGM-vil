@@ -154,6 +154,7 @@ public class Grafica extends AppCompatActivity {
     public void errorComando1(Comando1Message event){
         Toast.makeText(this,event.mensajeComando1,Toast.LENGTH_SHORT).show();
         empezar.setVisibility(View.VISIBLE);
+        capturar.setEnabled(true);
         stopService(intent);
     }
 
@@ -240,6 +241,7 @@ public class Grafica extends AppCompatActivity {
     }
 
     public void startServiceCapturar(View view) {
+        capturar.setEnabled(false);
         EventBus.getDefault().post(new CapturarMessage(true));
     }
 }

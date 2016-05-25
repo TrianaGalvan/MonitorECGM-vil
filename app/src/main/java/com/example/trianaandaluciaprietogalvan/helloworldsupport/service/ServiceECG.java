@@ -22,7 +22,6 @@ import com.example.trianaandaluciaprietogalvan.helloworldsupport.data.MonitorECG
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.CapturarMessage;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ColocarFrecuenciaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.Comando1Message;
-import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ErroEnlazadoECG;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.GraficarValorEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ProgressDialogGraficaEvent;
 import com.example.trianaandaluciaprietogalvan.helloworldsupport.message.ServiceECGErrorsEvent;
@@ -162,7 +161,8 @@ public class ServiceECG extends Service {
                 os.write(1);
             } catch (IOException e) {
                 e.printStackTrace();
-                EventBus.getDefault().post(new Comando1Message("No se envió el comando 1"));
+                EventBus.getDefault().post(new Comando1Message("No se estableció bien la conexión"));
+                cancel(true);
             }
             while (true) {
                 if (isCancelled())
@@ -344,7 +344,9 @@ public class ServiceECG extends Service {
                             BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
                             btSocket.connect();
                         }else {
-                            EventBus.getDefault().post(new ErroEnlazadoECG("El dispositivo no se encuentra enlazado con algún monitor ecg"));
+                            EventBus.getDefault().post(new ProgressDialogGraficaEvent("", ""));
+                            EventBus.getDefault().post(new Comando1Message("El dispositivo no se encuentra enlazado con algún monitor ecg"));
+                            cancel(true);
                         }
                     }
                 }
@@ -364,7 +366,6 @@ public class ServiceECG extends Service {
             if (!estadoConexion) {
                 EventBus.getDefault().post(new Comando1Message("Error de conexión, vuelva a intentarlo"));
             } else {
-                EventBus.getDefault().post(new ServiceECGErrorsEvent("Conexion establecida"));
                 estadoBt = true;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     intercambio = (IntercambioDatos) new IntercambioDatos().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -428,7 +429,6 @@ public class ServiceECG extends Service {
                         Thread.sleep(5);
                         publishProgress(n1);
                     }
-
                     inputStreamLeer.close();
                 }
             } catch (FileNotFoundException e) {
@@ -459,10 +459,9 @@ public class ServiceECG extends Service {
     @Override
     public void onDestroy() {
         if(intercambio != null){
-            intercambio.cancel(true);
-            intercambio = null;
             banderaCapturar = false;
             try {
+                intercambio.cancel(true);
                 if(fileOutput != null){
                     fileOutput.close();
                 }
@@ -477,7 +476,11 @@ public class ServiceECG extends Service {
             }
         }
         else if(leerArchivo != null){
-            leerArchivo.cancel(true);
+            try{
+                leerArchivo.cancel(true);
+            }catch (Exception e){
+                Log.i("ServiceECG","Leer archivo ya se habia detenido");
+            }
             leerArchivo = null;
         }
         inputStream = null;
